@@ -15,6 +15,7 @@ git submodule add -b feature/alu %GIT_REPO% features/alu
 git submodule add -b feature/id %GIT_REPO% features/id
 git submodule add -b feature/imem %GIT_REPO% features/imem
 git submodule add -b feature/pc %GIT_REPO% features/pc
+git submodule add -b feature/cpu %GIT_REPO% features/cpu
 git submodule add -b register_file %GIT_REPO% features/rf
 
 echo Готово.

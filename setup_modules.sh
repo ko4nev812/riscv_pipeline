@@ -13,4 +13,5 @@ clone_feature feature/alu alu
 clone_feature feature/id id
 clone_feature feature/imem imem
 clone_feature feature/pc pc
+clone_feature feature/cpu cpu
 clone_feature register_file rf

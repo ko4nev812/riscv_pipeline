@@ -1,0 +1,24 @@
+[submodule "features/alu"]
+	path = features/alu
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/alu
+[submodule "features/id"]
+	path = features/id
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/id
+[submodule "features/imem"]
+	path = features/imem
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/imem
+[submodule "features/pc"]
+	path = features/pc
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/pc
+[submodule "features/rf"]
+	path = features/rf
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = register_file
+[submodule "features/cpu"]
+	path = features/cpu
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/cpu
