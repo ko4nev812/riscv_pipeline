@@ -22,3 +22,11 @@
 	path = features/cpu
 	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
 	branch = feature/cpu
+[submodule "features/branch_unit"]
+	path = features/branch_unit
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/branch_unit
+[submodule "features/imm_gen"]
+	path = features/imm_gen
+	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
+	branch = feature/imm_gen

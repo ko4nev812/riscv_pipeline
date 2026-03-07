@@ -14,4 +14,6 @@ clone_feature feature/id id
 clone_feature feature/imem imem
 clone_feature feature/pc pc
 clone_feature feature/cpu cpu
+clone_feature feature/branch_unit branch_unit
+clone_feature feature/imm_gen imm_gen
 clone_feature register_file rf
