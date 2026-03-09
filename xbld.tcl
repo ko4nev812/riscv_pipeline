@@ -39,13 +39,13 @@ close $fh
 
 
 # Copy features
-set source_dirs [list "alu" "id" "imem" "pc" "rf" "cpu"]
+set source_dirs [list "alu_shifter" "branch_unit" "id" "imem" "imm_gen" "pc" "rf" "cpu"]
 
 file delete -force $srcDir
 file mkdir $srcDir
 
 foreach feature $source_dirs {
-    
+    puts "Parsing files in $feature:"
     set dir "$featuresDir/$feature/src"
     if {[file isdirectory $dir]} {
         set subdirs [glob -nocomplain -type d [file join $dir "*"]]
@@ -60,34 +60,54 @@ foreach feature $source_dirs {
             # Копируем все файлы из подпапки с заменой
             set files [glob -nocomplain -type f [file join $subdir "*"]]
             foreach file $files {
-                file copy -force $file $dest_subdir
-                puts "Copying $file to $dest_subdir"
+                set filename [file tail $file]
+                if {[string match "*.svh" $filename] && $feature != "cpu"} {
+                    # Формируем новое имя с префиксом $feature_
+                    set new_filename "$feature\_$filename"
+                    set dest_path [file join $dest_subdir $new_filename]
+            
+                    file copy -force $file $dest_path
+                    puts "\tCopying header file: $file -> $dest_path"
+                } else {
+                    puts "\tCopying source file $file -> $dest_subdir"
+                    file copy -force $file $dest_subdir
+                }       
             }
         }
     }
+    puts "\n"
 }
 
 #---------
 
 puts "Generated IMEM init path: $imem_mem_path"
 
-add_files -fileset sources_1        \
-         $rtlDir/cpu_system.sv      \
-         $rtlDir/cpu_core.sv        \
-         $rtlDir/pc.sv              \
-         $rtlDir/id.sv              \
-         $rtlDir/imem_sim_m.sv      \
-         $rtlDir/register_file.sv   \
-         $rtlDir/alu.sv             \
-         $rtlDir/pf.sv              \
-         $init_def_file
+# SV files:
+set rtl_files [list]    
+set sv_files [glob -nocomplain -type f $rtlDir/*.sv]
+set rtl_files [concat $rtl_files $sv_files  $init_def_file]
+if {[llength $rtl_files] > 0} {
+    add_files -fileset sources_1 $rtl_files
+} else {
+    error "No *.sv files were found in $rtlDir dir"
+}
 
-add_files -fileset constrs_1 \
-         $constrDir/rv_nsu_basys_3.xdc \
-         $constrDir/rv_nsu_basys_3.sdc
+# Constraint files:
+set constr_files [glob -nocomplain -type f $constrDir/*.*dc]
+if {[llength $constr_files] > 0} {
+    add_files -fileset constrs_1 $constr_files
+} else {
+    error "No constraint files were found in $constrDir dir"
+}
 
-add_files -fileset sim_1  \
-         $simDir/rv_nsu_tb.sv
+# Sim files:
+set sim_files [glob -nocomplain -type f $simDir/*.sv]
+if {[llength $sim_files] > 0} {
+    add_files -fileset sim_1 $sim_files
+} else {
+    error "No constraint files were found in $simDir dir"
+}
+
 
 set_property INCLUDE_DIRS $rtlDir [get_filesets sim_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]
