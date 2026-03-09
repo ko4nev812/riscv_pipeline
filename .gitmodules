@@ -1,7 +1,7 @@
-[submodule "features/alu"]
-	path = features/alu
+[submodule "features/alu_shifter"]
+	path = features/alu_shifter
 	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git
-	branch = feature/alu
+	branch = feature/alu_shifter
 [submodule "features/id"]
 	path = features/id
 	url = ssh://git@gitverse.ru:2222/risc-v_sberlab_nsu/rv-nsu.git

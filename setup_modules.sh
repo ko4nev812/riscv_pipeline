@@ -9,7 +9,7 @@ function clone_feature {
     fi
 }
 
-clone_feature feature/alu alu
+clone_feature feature/alu_shifter alu_shifter
 clone_feature feature/id id
 clone_feature feature/imem imem
 clone_feature feature/pc pc
