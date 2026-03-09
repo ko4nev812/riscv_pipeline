@@ -61,13 +61,13 @@ foreach feature $source_dirs {
             set files [glob -nocomplain -type f [file join $subdir "*"]]
             foreach file $files {
                 set filename [file tail $file]
-                if {[string match "*.svh" $filename] && $feature != "cpu"} {
+                if {[string match "risc-v.svh" $filename] && $feature != "cpu"} {
                     # Формируем новое имя с префиксом $feature_
                     set new_filename "$feature\_$filename"
                     set dest_path [file join $dest_subdir $new_filename]
             
                     file copy -force $file $dest_path
-                    puts "\tCopying header file: $file -> $dest_path"
+                    puts "\tCopying RENAMED header file: $file -> $dest_path"
                 } else {
                     puts "\tCopying source file $file -> $dest_subdir"
                     file copy -force $file $dest_subdir
