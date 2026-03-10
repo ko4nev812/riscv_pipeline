@@ -75,20 +75,103 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 
 //=== common section (end)
 
+
 //===IMEM section
 localparam IMEM_INIT_FILE  = "IMem_Init_File.mem";
 //===IMEM section (end)
 
-//=== ALU section 
-`define ALU_DEFS_ENA
-`ifdef ALU_DEFS_ENA
-localparam int ALU_SEL_LEN = 8;
-typedef enum logic [ALU_SEL_LEN-1:0] { ALU_ADD, ALU_SUB, ALU_AND, ALU_OR, ALU_XOR, ALU_SLT, ALU_SLTU, ALU_JALR, ALU_BYP } ALU_SEL_t;
-`endif
-//=== ALU section (end)
-
 //=== ID section 
 `define ID_DEFS_ENA
+/*
+ * Instruction decoder instruction type.
+ *
+ * Passed as input argument into decoder instead of full instruction [31:0].
+ * There's only 9 significant bits that are mandatory to determine instruction:
+ * funct7[5], funct3[2:0], opcode[4:0] = [[31], [14], [13], [12], [6], [5], [4], [3], [2]]
+ */
+typedef struct packed {
+    logic        funct7;  // [30] bit
+    logic [2:0]  funct3;  // [14], [13], [12] bits
+    logic [4:0]  opcode;  // [6], [5], [4], [3], [2] bits
+} Id_instr_t;
+
+/*
+ * Instruction decoder control INPUT signals.
+ *
+ * Consists of additional input signals, necessary to decode an instruction.
+ *   - br_eq : (rd1 == rd2) ? 1 : 0    [from branch comparator]
+ *   - br_lt : (rd1 < rd2) ? 1 : 0     [from branch comparator]
+ */
+typedef struct packed {
+    logic  br_eq;
+    logic  br_lt;
+} Id_controls_in_t;
+
+/*
+ * Instruction decoder control OUTPUT signals.
+ *
+ * Output control signals:
+ *   - reg_wr      write to RF - 0: disabled, 1: enabled
+ *   - dmem_we     write to DMEM - 0: disabled, 1: enabled
+ *   - a_sel       first operand for ALU - 0: PC, 1: rd1
+ *   - b_sel       second operand for ALU - 0: imm, 1: rd2
+ *   - sh_sel      type of shift - 3'b100: SLL, 3'b010: SRL, 3'b001: SRA
+ *   - br_un       type of branch comparison - 0: signed, 1: unsigned
+ *   - pc_sel      next PC is - 0: ALU output, 1: PC+4
+ *   - alu_sel     ALU op code: 0: add, 1: sub, 2: and, 3: or, 4: xor, 5: slt, 6: sltu, 7: lui, 8: jalr
+ *   - wb_sel      source for write to RF: 0: PC+4, 1: ALU out, 2: shifter out, 3: dmem out
+ *   - imm_type    type of instruction: 0: R, 1: I, 2: S, 3: B, 4: U, 5: J
+ */
+typedef struct packed {
+    logic        reg_wr;
+    logic        dmem_we;
+    logic        a_sel;
+    logic        b_sel;
+    logic [2:0]  sh_sel;
+    logic        br_un;
+    logic        pc_sel;
+    logic [3:0]  alu_sel;
+    logic [1:0]  wb_sel;
+    logic [2:0]  imm_type;
+} Id_controls_out_t;
+
+// sh_sel
+localparam SHIFT_SLL = 3'b100;
+localparam SHIFT_SRL = 3'b010;
+localparam SHIFT_SRA = 3'b001;
+localparam SHIFT_ANY = 3'bxxx;
+
+// alu_sel
+
+/*
+localparam ALU_ADD  = 4'b0000;
+localparam ALU_SUB  = 4'b0001;
+localparam ALU_AND  = 4'b0010;
+localparam ALU_OR   = 4'b0011;
+localparam ALU_XOR  = 4'b0100;
+localparam ALU_SLT  = 4'b0101;
+localparam ALU_SLTU = 4'b0110;
+localparam ALU_LUI  = 4'b0111;
+localparam ALU_JALR = 4'b1000;
+localparam ALU_ANY  = 4'bxxxx;
+*/
+
+// wb_sel
+localparam WB_PC4_OUT     = 2'b00;
+localparam WB_ALU_OUT     = 2'b01;
+localparam WB_SHIFTER_OUT = 2'b10;
+localparam WB_DMEM_OUT    = 2'b11;
+localparam WB_ANY         = 2'bxx;
+
+// instruction type
+localparam INSTR_TYPE_R   = 3'b000;
+localparam INSTR_TYPE_I   = 3'b001;
+localparam INSTR_TYPE_S   = 3'b010;
+localparam INSTR_TYPE_B   = 3'b011;
+localparam INSTR_TYPE_U   = 3'b100;
+localparam INSTR_TYPE_J   = 3'b101;
+localparam INSTR_TYPE_ANY = 3'bxxx;
+
 `ifdef ID_DEFS_ENA
 //localparam int INSTR_LEN     = 32; // fixed for all RISC-V ISA except RVC
 //localparam int RF_ADDR_WIDTH = 5; // RISC-V ISA dependent (?)
@@ -100,10 +183,31 @@ typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
 //=== ID section (end)
 
 
+//=== ALU section 
+`define ALU_DEFS_ENA
+`ifdef ALU_DEFS_ENA
+localparam int ALU_SEL_LEN = 8;
+typedef enum logic [ALU_SEL_LEN-1:0] {
+    ALU_ADD  = 4'b0000,
+    ALU_SUB  = 4'b0001,
+    ALU_AND  = 4'b0010,
+    ALU_OR   = 4'b0011,
+    ALU_XOR  = 4'b0100,
+    ALU_SLT  = 4'b0101,
+    ALU_SLTU = 4'b0110,
+    ALU_LUI  = 4'b0111,
+    ALU_JALR = 4'b1000,
+    ALU_BYP  = 4'b1111   //!!!!! TODO: check value
+} ALU_SEL_t;
+localparam ALU_SEL_t ALU_ANY = 4'bxxxx;
+`endif
+//=== ALU section (end)
+
+
 //=== DEBUG
 
 `define SYS_DEBUG_OUT
-`define RF_DEBUG_OUT
+//`define RF_DEBUG_OUT
 
 `ifdef SIMULATOR
 localparam int NN = 30;
