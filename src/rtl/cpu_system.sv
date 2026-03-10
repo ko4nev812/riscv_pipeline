@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 `include "risc-v.svh"
-
+`include "imem_init_path.svh"  
 //******************************************************************************
 //******************************************************************************
 module cpu_system import risc_v_pkg::*;
@@ -146,7 +146,7 @@ imem_sim_m
         #(
             //.INIT_FILE  ("../bin/imem.mem"),
             //.INIT_FILE  ("c:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/imem.mem"),
-            .INIT_FILE  ("G:/RV/repo/rv-nsu_main/prg/imem.mem"),
+            .INIT_FILE  (`IMEM_INIT_FILE),
             .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
         )
 imem        

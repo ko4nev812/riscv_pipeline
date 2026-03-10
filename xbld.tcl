@@ -25,10 +25,14 @@ set featuresDir   "$prjDir/features"
 #---
 file delete -force $cfgDir
 file mkdir $cfgDir
+file delete -force $srcDir
+file mkdir $srcDir
+file mkdir $rtlDir
+
 create_project $prjName $cfgDir -part $prjFPGA
 
 set imem_mem_path [file normalize [file join $prjDir prg imem.mem]]
-set init_def_file [file join $cfgDir imem_init_path.svh]
+set init_def_file [file join $rtlDir imem_init_path.svh]
 
 set fh [open $init_def_file w]
 puts $fh "\`ifndef IMEM_INIT_PATH_SVH"
@@ -37,12 +41,11 @@ puts $fh "\`define IMEM_INIT_FILE \"$imem_mem_path\""
 puts $fh "\`endif"
 close $fh
 
+puts "Generated IMEM header file: $init_def_file"  
+puts "Generated IMEM init path: $imem_mem_path"  
 
 # Copy features
 set source_dirs [list "alu_shifter" "branch_unit" "id" "imem" "imm_gen" "pc" "rf" "cpu"]
-
-file delete -force $srcDir
-file mkdir $srcDir
 
 foreach feature $source_dirs {
     puts "Parsing files in $feature:"
@@ -79,8 +82,6 @@ foreach feature $source_dirs {
 }
 
 #---------
-
-puts "Generated IMEM init path: $imem_mem_path"
 
 # SV files:
 set rtl_files [list]    
