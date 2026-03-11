@@ -93,7 +93,13 @@ assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
 assign shift_shamt = id_output_controls.b_sel? rf_rd2[4:0] : instr[24:20];
 
 assign rf_we3 = id_output_controls.reg_wr & !rst;
-assign rf_wd3 = alu_out;
+
+//source for write to RF: 0: PC+4, 1: ALU out, 2: shifter out, 3: dmem out
+//TODO ADD DMEM
+Data_t dummy_dmem;
+assign rf_wd3 = id_output_controls.wb_sel[1] ? 
+(id_output_controls.wb_sel[0]?dummy_dmem:shifter_out):
+(id_output_controls.wb_sel[0]?alu_out:pc+4);
 
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
