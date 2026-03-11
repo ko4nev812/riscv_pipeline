@@ -40,8 +40,6 @@ timeprecision 1ps;
 
 //---
 Addr_t pc;
-Addr_t pc_br = '0;
-logic br_taken = 1'b0;
 
 //---
 RegAddr_t rs1;
@@ -62,6 +60,11 @@ Data_t    alu_in_a;
 Data_t    alu_in_b;
 Data_t    alu_out;
 
+//--- ID
+Id_instr_t id_instr;
+Id_controls_in_t id_controls_in;
+Id_controls_out_t id_output_controls;
+logic id_illegal;
 
 `ifdef RF_DEBUG_OUT
     Data_t dbg_reg;  
@@ -80,15 +83,21 @@ Data_t    alu_out;
 
 assign imem_addr = pc;
 
-assign alu_in_a = rf_rd1;
-assign alu_in_b = b_sel ? imm : rf_rd2;
+assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
+assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
 
-assign rf_we3 = we3 & !rst;
+assign rf_we3 = id_output_controls.reg_wr & !rst;
 assign rf_wd3 = alu_out;
+
+assign id_instr.funct7 = instr[30];
+assign id_instr.funct3 = instr[14:12];
+assign id_instr.opcode = instr[6:2];
+assign id_controls_in.br_eq = '1;
+assign id_controls_in.br_lt = '0;
 
 //==============================================================================
 
-//--------------------------------------------------------------------------
+//--------------------- PROGRAM COUNTER -----------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 program_counter
 #(
@@ -99,25 +108,21 @@ pc_inst
 (
     .clk      ( clk ),
     .rst      ( rst ),
-    .br_taken ( br_taken ),
-    .pc_br    ( pc_br    ),
+    .br_taken ( ~id_output_controls.pc_sel ),
+    .pc_br    ( alu_out  ),
     .pc       ( pc       )
 );
 
-//--------------------------------------------------------------------------
+//--------------------- INSTRUCTION DECODER -------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 id id_inst
 (
-    .instr ( instr ),
-    .rs1   ( rs1   ),
-    .rs2   ( rs2   ),
-    .rd    ( rd    ),
-    .we3   ( we3   ),
-    .imm   ( imm   ),
-    .b_sel ( b_sel )
+    .instr ( id_instr ),
+    .input_controls ( id_controls_in ),
+    .output_controls (id_output_controls),
+    .illegal (id_illegal)
 );
-
-//--------------------------------------------------------------------------
+//--------------------- REGISTER FILE -------------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 register_file
 #(
@@ -143,7 +148,7 @@ rf_inst
     `endif
 );
 
-//--------------------------------------------------------------------------
+//--------------------- ALU -----------------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 alu_m
 #(
@@ -151,7 +156,7 @@ alu_m
 )
 alu_inst
 (
-    .sel ( ADD  ),   
+    .sel ( id_output_controls.alu_sel  ),   
     .a   ( alu_in_a ),
     .b   ( alu_in_b ),
     .res ( alu_out  )

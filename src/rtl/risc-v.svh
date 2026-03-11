@@ -187,6 +187,7 @@ typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
 `define ALU_DEFS_ENA
 `ifdef ALU_DEFS_ENA
 localparam int ALU_SEL_LEN = 8;
+localparam ALU_BYP = 4'b0111;  // TODO RENAME in ALU to LUI
 typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_ADD  = 4'b0000,
     ALU_SUB  = 4'b0001,
@@ -197,9 +198,8 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_SLTU = 4'b0110,
     ALU_LUI  = 4'b0111,
     ALU_JALR = 4'b1000,
-    ALU_BYP  = 4'b1111   //!!!!! TODO: check value
+    ALU_ANY  = 4'bxxxx   
 } ALU_SEL_t;
-localparam ALU_SEL_t ALU_ANY = 4'bxxxx;
 `endif
 //=== ALU section (end)
 
