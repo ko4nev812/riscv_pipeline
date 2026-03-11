@@ -41,8 +41,8 @@ puts $fh "\`define IMEM_INIT_FILE \"$imem_mem_path\""
 puts $fh "\`endif"
 close $fh
 
-puts "Generated IMEM header file: $init_def_file"  
-puts "Generated IMEM init path: $imem_mem_path"  
+puts "Generated IMEM header file: $init_def_file"
+puts "Generated IMEM init path: $imem_mem_path"
 
 # Copy features
 set source_dirs [list "alu_shifter" "branch_unit" "id" "imem" "imm_gen" "pc" "rf" "cpu"]
