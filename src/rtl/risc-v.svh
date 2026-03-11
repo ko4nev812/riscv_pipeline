@@ -204,6 +204,16 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
 //=== ALU section (end)
 
 
+//=== Shifter section
+  typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
+
+  typedef enum logic [2:0] {
+    SLLI = 3'b100,
+    SRLI = 3'b010,
+    SRAI = 3'b001
+  } shift_sel_t;
+//=== Shifter section (end)
+
 //=== DEBUG
 
 `define SYS_DEBUG_OUT

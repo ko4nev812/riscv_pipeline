@@ -55,7 +55,11 @@ Data_t rf_rd2;
 Data_t rf_wd3;
 logic  rf_we3;
 
-//---
+//--- Shifter
+Data_t shifter_out;
+shift_shamt_t shift_shamt;
+
+//--- ALU
 Data_t    alu_in_a;
 Data_t    alu_in_b;
 Data_t    alu_out;
@@ -65,7 +69,7 @@ Id_instr_t id_instr;
 Id_controls_in_t id_controls_in;
 Id_controls_out_t id_output_controls;
 logic id_illegal;
-
+    
 `ifdef RF_DEBUG_OUT
     Data_t dbg_reg;  
 `endif
@@ -85,6 +89,8 @@ assign imem_addr = pc;
 
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
+
+assign shift_shamt = id_output_controls.b_sel? rf_rd2[4:0] : instr[24:20];
 
 assign rf_we3 = id_output_controls.reg_wr & !rst;
 assign rf_wd3 = alu_out;
@@ -160,6 +166,19 @@ alu_inst
     .a   ( alu_in_a ),
     .b   ( alu_in_b ),
     .res ( alu_out  )
+);
+
+//--------------------- Shifter ------------------------
+risc_v_shifter_m
+#(
+    .XLEN ( XLEN )
+)
+shifter_inst
+(
+   .data (rf_rd1),
+   .shamt (shift_shamt),
+   .sel(id_output_controls.sh_sel),
+   .res (shifter_out)
 );
 
 endmodule : cpu_core_m
