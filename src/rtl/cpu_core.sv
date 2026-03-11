@@ -98,8 +98,6 @@ assign rf_wd3 = alu_out;
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
 assign id_instr.opcode = instr[6:2];
-assign id_controls_in.br_eq = '1;
-assign id_controls_in.br_lt = '0;
 
 //==============================================================================
 
@@ -187,6 +185,20 @@ imm_gen imm_gen_inst
     .instr (instr),
     .imm_type (id_output_controls.imm_type),
     .imm (imm)
+);
+
+//--------------------- Branch unit --------------------
+branch_unit_m
+#(
+    .XLEN ( XLEN )
+)
+branch_unit_inst
+(
+    .rd1(rf_rd1),
+    .rd2(rf_rd2),
+    .br_un(id_output_controls.br_un),
+    .br_eq(id_controls_in.br_eq),
+    .br_lt(id_controls_in.br_lt)
 );
 
 endmodule : cpu_core_m

@@ -217,14 +217,29 @@ typedef enum logic [2:0] {
 //=== IMM_GEN section (end)
 
 //=== Shifter section
-  typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
+typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
 
-  typedef enum logic [2:0] {
+typedef enum logic [2:0] {
     SLLI = 3'b100,
     SRLI = 3'b010,
     SRAI = 3'b001
-  } shift_sel_t;
+} shift_sel_t;
 //=== Shifter section (end)
+
+//=== Branch unit (end)
+localparam int BRU_SEL_LEN = 3;
+
+// BLTU/BGEU = BRU_BLT/BRU_BGE + br_un=1
+typedef enum logic [BRU_SEL_LEN-1:0] {
+    BRU_NONE = 3'b000,
+    BRU_JAL  = 3'b001,
+    BRU_JALR = 3'b010,
+    BRU_BEQ  = 3'b011,
+    BRU_BNE  = 3'b100,
+    BRU_BLT  = 3'b101,
+    BRU_BGE  = 3'b110
+} BRU_SEL_t;
+//=== Branch unit (end)
 
 //=== DEBUG
 
