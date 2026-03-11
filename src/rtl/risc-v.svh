@@ -49,7 +49,7 @@ localparam int XLEN = 32;                            // RISC-V ISA dependent
 localparam int IMEM_ADDR_WIDTH = 8;                  // (byte addressed) CPU system implementation dependent
 localparam int DMEM_ADDR_WIDTH = 8;                  // (byte addressed) CPU system implementation dependent
 
-localparam int INSTR_LEN       = 32;                 // fixed for all RISC-V ISA
+localparam int INSTR_LEN       = 32;                 // fixed for all RISC-V ISA except RVC
 localparam int RF_ADDR_WIDTH   = 5;                  // RISC-V ISA dependent (?)
 // (reserved) localparam int BYTE_ADDR_WIDTH = $clog2(XLEN/8);     // number of lower address bits - for select byte in word
 // (reserved) localparam int DATA_BYTE_NUM   = 2**BYTE_ADDR_WIDTH; // number of bytes in data word with length = XLEN
@@ -173,11 +173,9 @@ localparam INSTR_TYPE_J   = 3'b101;
 localparam INSTR_TYPE_ANY = 3'bxxx;
 
 `ifdef ID_DEFS_ENA
-//localparam int INSTR_LEN     = 32; // fixed for all RISC-V ISA except RVC
-//localparam int RF_ADDR_WIDTH = 5; // RISC-V ISA dependent (?)
+
 localparam int ADDI_IMM_LEN  = 12;
 
-//typedef logic [INSTR_LEN-1:0] Instr_t;
 typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
 `endif
 //=== ID section (end)
@@ -203,6 +201,20 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
 `endif
 //=== ALU section (end)
 
+//=== IMM_GEN section
+`define IMM_GEN_DEFS_ENA
+`ifdef IMM_GEN_DEFS_ENA
+typedef logic [31:0] Imm_t;
+typedef enum logic [2:0] {
+        IMM_I_TYPE = 3'b001,
+        IMM_S_TYPE = 3'b010,
+        IMM_B_TYPE = 3'b011,
+        IMM_U_TYPE = 3'b100,
+        IMM_J_TYPE = 3'b101,
+        IMM_NC = 3'bxxx
+    } Imm_type_t;
+`endif
+//=== IMM_GEN section (end)
 
 //=== Shifter section
   typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;

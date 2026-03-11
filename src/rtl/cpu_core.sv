@@ -181,5 +181,13 @@ shifter_inst
    .res (shifter_out)
 );
 
+//--------------------- IMM_GEN ------------------------
+imm_gen imm_gen_inst
+(
+    .instr (instr),
+    .imm_type (id_output_controls.imm_type),
+    .imm (imm)
+);
+
 endmodule : cpu_core_m
 
