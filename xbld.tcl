@@ -12,27 +12,21 @@ set prjFPGA xc7a35tcpg236-1     ;# BASYS-3
 set current_dir [pwd]
 #puts "current_dir: $current_dir"
 
-set prjDir        "$current_dir"
-set cfgDir        "$prjDir/cfg"
-set ipDir         "$prjDir/ip"
-set libDir        "$prjDir/lib"
-set srcDir        "$prjDir/src"
-set constrDir     "$srcDir/constr"
-set rtlDir        "$srcDir/rtl"
-set simDir        "$srcDir/sim"
-set featuresDir   "$prjDir/features"
+set prjDir   "$current_dir"
+set cfgDir   "$prjDir/cfg"
+set constDir "$prjDir/src/constr"
+set ipDir    "$prjDir/ip"
+set libDir   "$prjDir/lib"
+set rtlDir   "$prjDir/src/rtl"
+set simDir   "$prjDir/src/sim"
 
 #---
 file delete -force $cfgDir
 file mkdir $cfgDir
-file delete -force $srcDir
-file mkdir $srcDir
-file mkdir $rtlDir
-
 create_project $prjName $cfgDir -part $prjFPGA
 
 set imem_mem_path [file normalize [file join $prjDir prg imem.mem]]
-set init_def_file [file join $rtlDir imem_init_path.svh]
+set init_def_file [file join $cfgDir imem_init_path.svh]
 
 set fh [open $init_def_file w]
 puts $fh "\`ifndef IMEM_INIT_PATH_SVH"
@@ -41,74 +35,24 @@ puts $fh "\`define IMEM_INIT_FILE \"$imem_mem_path\""
 puts $fh "\`endif"
 close $fh
 
-puts "Generated IMEM header file: $init_def_file"
 puts "Generated IMEM init path: $imem_mem_path"
 
-# Copy features
-set source_dirs [list "alu_shifter" "branch_unit" "id" "imem" "imm_gen" "pc" "rf" "cpu"]
+add_files -fileset sources_1        \
+         $rtlDir/cpu_system.sv      \
+         $rtlDir/cpu_core.sv        \
+         $rtlDir/pc.sv              \
+         $rtlDir/id.sv              \
+         $rtlDir/imem_sim_m.sv      \
+         $rtlDir/register_file.sv   \
+         $rtlDir/alu.sv             \
+         $libDir/pf.sv              \
+         $init_def_file
+add_files -fileset constrs_1 \
+         $constDir/rv_nsu_basys_3.xdc \
+         $constDir/rv_nsu_basys_3.sdc
 
-foreach feature $source_dirs {
-    puts "Parsing files in $feature:"
-    set dir "$featuresDir/$feature/src"
-    if {[file isdirectory $dir]} {
-        set subdirs [glob -nocomplain -type d [file join $dir "*"]]
-        
-        foreach subdir $subdirs {
-            set subdir_name [file tail $subdir]
-            set dest_subdir [file join $srcDir $subdir_name]
-            
-            # Создаем подпапку в назначении
-            file mkdir $dest_subdir
-            
-            # Копируем все файлы из подпапки с заменой
-            set files [glob -nocomplain -type f [file join $subdir "*"]]
-            foreach file $files {
-                set filename [file tail $file]
-                if {[string match "risc-v.svh" $filename] && $feature != "cpu"} {
-                    # Формируем новое имя с префиксом $feature_
-                    set new_filename "$feature\_$filename"
-                    set dest_path [file join $dest_subdir $new_filename]
-            
-                    file copy -force $file $dest_path
-                    puts "\tCopying RENAMED header file: $file -> $dest_path"
-                } else {
-                    puts "\tCopying source file $file -> $dest_subdir"
-                    file copy -force $file $dest_subdir
-                }       
-            }
-        }
-    }
-    puts "\n"
-}
-
-#---------
-
-# SV files:
-set rtl_files [list]    
-set sv_files [glob -nocomplain -type f $rtlDir/*.sv]
-set rtl_files [concat $rtl_files $sv_files  $init_def_file]
-if {[llength $rtl_files] > 0} {
-    add_files -fileset sources_1 $rtl_files
-} else {
-    error "No *.sv files were found in $rtlDir dir"
-}
-
-# Constraint files:
-set constr_files [glob -nocomplain -type f $constrDir/*.*dc]
-if {[llength $constr_files] > 0} {
-    add_files -fileset constrs_1 $constr_files
-} else {
-    error "No constraint files were found in $constrDir dir"
-}
-
-# Sim files:
-set sim_files [glob -nocomplain -type f $simDir/*.sv]
-if {[llength $sim_files] > 0} {
-    add_files -fileset sim_1 $sim_files
-} else {
-    error "No constraint files were found in $simDir dir"
-}
-
+add_files -fileset sim_1  \
+         $simDir/rv_nsu_tb.sv
 
 set_property INCLUDE_DIRS $rtlDir [get_filesets sim_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]
