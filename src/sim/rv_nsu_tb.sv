@@ -52,7 +52,7 @@ cpu_system cpu_system_duv
         .dbg_insn_addr   (),
         .dbg_insn_opcode (),
         .dbg_insn_funct3 (),
-        .dgb_clk_vec     (),
+        .dbg_clk_vec     (),
         .dbg_pll_locked  ()
     `endif
 );

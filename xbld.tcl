@@ -42,9 +42,12 @@ add_files -fileset sources_1        \
          $rtlDir/cpu_core.sv        \
          $rtlDir/pc.sv              \
          $rtlDir/id.sv              \
+         $rtlDir/branch_unit_m.sv   \
          $rtlDir/imem_sim_m.sv      \
+         $rtlDir/imm_gen.sv         \
          $rtlDir/register_file.sv   \
          $rtlDir/alu.sv             \
+         $rtlDir/shifter_alu.sv     \
          $libDir/pf.sv              \
          $init_def_file
 add_files -fileset constrs_1 \
@@ -57,6 +60,7 @@ add_files -fileset sim_1  \
 set_property INCLUDE_DIRS $rtlDir [get_filesets sim_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]
 set_property used_in_implementation false [get_files  $simDir/rv_nsu_tb.sv]
+set_property top rv_nsu_tb [get_filesets sim_1]
 set_property -name {xsim.simulate.runtime} -value {1000us} -objects [get_filesets sim_1]
 
 puts "=================== create IP's"
