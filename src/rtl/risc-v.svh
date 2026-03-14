@@ -79,6 +79,52 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 //===IMEM section
 localparam IMEM_INIT_FILE  = "IMem_Init_File.mem";
 //===IMEM section (end)
+//=== ALU section 
+`define ALU_DEFS_ENA
+`ifdef ALU_DEFS_ENA
+localparam int ALU_SEL_LEN = 8;
+localparam ALU_BYP = 4'b0111;  // TODO RENAME in ALU to LUI
+typedef enum logic [ALU_SEL_LEN-1:0] {
+    ALU_ADD  = 4'b0000,
+    ALU_SUB  = 4'b0001,
+    ALU_AND  = 4'b0010,
+    ALU_OR   = 4'b0011,
+    ALU_XOR  = 4'b0100,
+    ALU_SLT  = 4'b0101,
+    ALU_SLTU = 4'b0110,
+    ALU_LUI  = 4'b0111,
+    ALU_JALR = 4'b1000,
+    ALU_ANY  = 4'bxxxx   
+} ALU_SEL_t;
+`endif
+//=== ALU section (end)
+
+//=== Shifter section
+typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
+
+typedef enum logic [2:0] {
+    SLLI = 3'b100,
+    SRLI = 3'b010,
+    SRAI = 3'b001
+} shift_sel_t;
+//=== Shifter section (end)
+
+
+//=== IMM_GEN section
+`define IMM_GEN_DEFS_ENA
+`ifdef IMM_GEN_DEFS_ENA
+typedef logic [31:0] Imm_t;
+typedef enum logic [2:0] {
+        IMM_I_TYPE = 3'b001,
+        IMM_S_TYPE = 3'b010,
+        IMM_B_TYPE = 3'b011,
+        IMM_U_TYPE = 3'b100,
+        IMM_J_TYPE = 3'b101,
+        IMM_NC = 3'bxxx
+    } Imm_type_t;
+`endif
+//=== IMM_GEN section (end)
+
 
 //=== ID section 
 `define ID_DEFS_ENA
@@ -127,12 +173,12 @@ typedef struct packed {
     logic        dmem_we;
     logic        a_sel;
     logic        b_sel;
-    logic [2:0]  sh_sel;
+    shift_sel_t  sh_sel;
     logic        br_un;
     logic        pc_sel;
-    logic [3:0]  alu_sel;
+    ALU_SEL_t    alu_sel;
     logic [1:0]  wb_sel;
-    logic [2:0]  imm_type;
+    Imm_type_t imm_type;
 } Id_controls_out_t;
 
 // sh_sel
@@ -179,52 +225,6 @@ localparam int ADDI_IMM_LEN  = 12;
 typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
 `endif
 //=== ID section (end)
-
-
-//=== ALU section 
-`define ALU_DEFS_ENA
-`ifdef ALU_DEFS_ENA
-localparam int ALU_SEL_LEN = 8;
-localparam ALU_BYP = 4'b0111;  // TODO RENAME in ALU to LUI
-typedef enum logic [ALU_SEL_LEN-1:0] {
-    ALU_ADD  = 4'b0000,
-    ALU_SUB  = 4'b0001,
-    ALU_AND  = 4'b0010,
-    ALU_OR   = 4'b0011,
-    ALU_XOR  = 4'b0100,
-    ALU_SLT  = 4'b0101,
-    ALU_SLTU = 4'b0110,
-    ALU_LUI  = 4'b0111,
-    ALU_JALR = 4'b1000,
-    ALU_ANY  = 4'bxxxx   
-} ALU_SEL_t;
-`endif
-//=== ALU section (end)
-
-//=== IMM_GEN section
-`define IMM_GEN_DEFS_ENA
-`ifdef IMM_GEN_DEFS_ENA
-typedef logic [31:0] Imm_t;
-typedef enum logic [2:0] {
-        IMM_I_TYPE = 3'b001,
-        IMM_S_TYPE = 3'b010,
-        IMM_B_TYPE = 3'b011,
-        IMM_U_TYPE = 3'b100,
-        IMM_J_TYPE = 3'b101,
-        IMM_NC = 3'bxxx
-    } Imm_type_t;
-`endif
-//=== IMM_GEN section (end)
-
-//=== Shifter section
-typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
-
-typedef enum logic [2:0] {
-    SLLI = 3'b100,
-    SRLI = 3'b010,
-    SRAI = 3'b001
-} shift_sel_t;
-//=== Shifter section (end)
 
 //=== Branch unit (end)
 localparam int BRU_SEL_LEN = 3;
