@@ -15,7 +15,7 @@ module imem_sim_m import risc_v_pkg::*;
     Instr_t mem[0:MEM_DEPTH-1];
     initial begin
         mem = '{default: '0};
-        if (INIT_FILE == "") begin
+        if (INIT_FILE != "") begin
              $readmemh(INIT_FILE, mem, 0);
         end
     end
