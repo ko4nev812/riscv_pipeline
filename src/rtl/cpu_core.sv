@@ -98,8 +98,8 @@ assign rf_we3 = id_output_controls.reg_wr & !rst;
 //TODO ADD DMEM
 Data_t dummy_dmem;
 assign rf_wd3 = id_output_controls.wb_sel[1] ? 
-(id_output_controls.wb_sel[0]?dummy_dmem:shifter_out):
-(id_output_controls.wb_sel[0]?alu_out:pc+4);
+(id_output_controls.wb_sel[0] ? dummy_dmem : shifter_out):
+(id_output_controls.wb_sel[0] ? alu_out : pc+4);                 // TODO: get pc+4 from the 'PC', in current case we have additional 32-bit adder
 
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];

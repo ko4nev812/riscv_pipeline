@@ -144,8 +144,6 @@ cpu_core_m cpu
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 imem_sim_m 
         #(
-            //.INIT_FILE  ("../bin/imem.mem"),
-            //.INIT_FILE  ("c:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/imem.mem"),
             .INIT_FILE  (`IMEM_INIT_FILE),
             .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
         )

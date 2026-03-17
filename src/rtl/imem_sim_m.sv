@@ -2,7 +2,7 @@
 
 module imem_sim_m import risc_v_pkg::*;
         #(
-            parameter INIT_FILE  = IMEM_INIT_FILE,
+            parameter INIT_FILE  = "",
             parameter ADDR_WIDTH = IMEM_ADDR_WIDTH
         )
 (

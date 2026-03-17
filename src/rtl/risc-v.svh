@@ -77,8 +77,8 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 
 
 //===IMEM section
-localparam IMEM_INIT_FILE  = "IMem_Init_File.mem";
 //===IMEM section (end)
+
 //=== ALU section 
 `define ALU_DEFS_ENA
 `ifdef ALU_DEFS_ENA
