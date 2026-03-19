@@ -104,7 +104,9 @@ assign rf_wd3 = id_output_controls.wb_sel[1] ?
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
 assign id_instr.opcode = instr[6:2];
-
+assign rs1 = instr[19:15];
+assign rs2 = instr[24:20];
+assign rd = instr[11:7];
 //==============================================================================
 
 //--------------------- PROGRAM COUNTER -----------------------------------------------
