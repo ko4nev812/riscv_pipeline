@@ -275,7 +275,7 @@ function automatic str_t disasm(input Instr_t instr);
     int imm_j_type = signed'({{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:22], 2'b00});
     // copied from feature/imm_gen branch
 
-    logic [4:0] shamt = instr[24:20]
+    logic [4:0] shamt = instr[24:20];
     //--- imm generation (end)
 
     string format_str;
