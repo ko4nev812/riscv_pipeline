@@ -265,26 +265,62 @@ function automatic str_t disasm(input Instr_t instr);
     //funct3 = instr[14:12];
     //funct7 = instr[31:25];
 
+    logic[8:0] case_key = { instr[30], instr[14:12], instr[6:2] };
+
     string format_str;
 
-    logic is_add = (instr[6:0] == 7'b0110011) & (instr[14:12] == 3'b000) & (instr[31:25] == 7'b0000000);
-    logic is_addi = (instr[6:0] == 7'b0010011) & (instr[14:12] == 3'b000);
+    casex (case_key)
+        // MNEMONIC  funct7_funct3_opcode
+        /* LUI   */  'bx_xxx_01101: format_str = $sformatf("lui x%0d, %0d", instr[11:7], instr[31:12]);
+        /* AUIPC */  'bx_xxx_00101: format_str = $sformatf("auipc x%0d, %0d", instr[11:7], instr[31:12]);
+        /* JAL   */  'bx_xxx_11011: format_str = $sformatf("jal x%0d, %0d", instr[11:7], { instr[20],instr[10:1],instr[11],instr[19:12] });
+        /* JALR  */  'b0_000_11001: format_str = $sformatf("jalr x%0d, x%0d, %0d", instr[11:7], instr[19:15], instr[31:20]);
+        /* BEQ   */  'bx_000_11000: format_str = $sformatf("beq x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* BNE   */  'bx_001_11000: format_str = $sformatf("bne x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* BLT   */  'bx_100_11000: format_str = $sformatf("blt x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* BGE   */  'bx_101_11000: format_str = $sformatf("bge x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* BLTU  */  'bx_110_11000: format_str = $sformatf("bltu x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* BGEU  */  'bx_111_11000: format_str = $sformatf("bgeu x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
+        /* LB    */  'bx_000_00000: format_str = $sformatf("lb x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
+        /* LH    */  'bx_001_00000: format_str = $sformatf("lh x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
+        /* LW    */  'bx_010_00000: format_str = $sformatf("lw x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
+        /* LBU   */  'bx_100_00000: format_str = $sformatf("lbu x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
+        /* LHU   */  'bx_101_00000: format_str = $sformatf("lhu x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
+        /* SB    */  'bx_000_01000: format_str = $sformatf("sb x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
+        /* SH    */  'bx_001_01000: format_str = $sformatf("sh x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
+        /* SW    */  'bx_010_01000: format_str = $sformatf("sw x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
+        /* ADDI  */  'bx_000_00100: format_str = $sformatf("addi ");
+        /* SLTI  */  'bx_010_00100: format_str = $sformatf("slti ");
+        /* SLTIU */  'bx_011_00100: format_str = $sformatf("sltiu ");
+        /* XORI  */  'bx_100_00100: format_str = $sformatf("xori ");
+        /* ORI   */  'bx_110_00100: format_str = $sformatf("ori ");
+        /* ANDI  */  'bx_111_00100: format_str = $sformatf("andi ");
+        /* SLLI  */  'b0_001_00100: format_str = $sformatf("slli ");
+        /* SRLI  */  'b0_101_00100: format_str = $sformatf("srli ");
+        /* SRAI  */  'b1_101_00100: format_str = $sformatf("srai ");
+        /* ADD   */  'b0_000_01100: format_str = $sformatf("add x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SUB   */  'b1_000_01100: format_str = $sformatf("sub x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SLL   */  'b0_001_01100: format_str = $sformatf("sll x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SLT   */  'b0_010_01100: format_str = $sformatf("slt x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SLTU  */  'b0_011_01100: format_str = $sformatf("sltu x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* XOR   */  'b0_100_01100: format_str = $sformatf("xor x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SRL   */  'b0_101_01100: format_str = $sformatf("srl x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* SRA   */  'b1_101_01100: format_str = $sformatf("sra x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* OR    */  'b0_110_01100: format_str = $sformatf("or x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
+        /* AND   */  'b0_111_01100: format_str = $sformatf("and x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
 
-    //--- add
-    if(is_add) begin
-        format_str = $sformatf("add x%1d, x%1d, x%1d", instr[11:7], instr[19:15], instr[24:20]);
-        return string2str(format_str);
-    end    
+        /* There goes unsupported instructions, we consider them as NOPs */
+        /* FENCE
+            FENCE.TSO
+            PAUSE */  'bx_000_00011: format_str = $sformatf("nop");
+        /* ECALL
+            EBREAK */ 'b0_000_11100: format_str = $sformatf("nop");
 
-    //--- addi
-    if(is_addi) begin
-        Data_t imm = {{(INSTR_LEN-ADDI_IMM_LEN){instr[INSTR_LEN-1]}}, instr[INSTR_LEN-1:INSTR_LEN-ADDI_IMM_LEN]};
-        format_str = $sformatf("addi x%1d, x%1d, %4d", instr[11:7], instr[19:15], int'(imm));
-        return string2str(format_str);
-    end    
+        default: begin
+            format_str = $sformatf("n/i");
+        end
+    endcase
 
-    //--- unknown instr
-    format_str = $sformatf("n/i");
     return string2str(format_str);
 
 endfunction : disasm
