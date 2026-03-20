@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module dmem #(
-    parameter int MEM_BYTES = 4096,
-    parameter string INIT_FILE = ""
+    parameter MEM_BYTES = 4096,
+    parameter INIT_FILE = ""
 ) (
     input  logic        clk,
     input  logic        mem_read,
@@ -90,7 +90,7 @@ module dmem #(
         word = {b3, b2, b1, b0};
 
         rdata = 32'h0000_0000;
-        if (mem_read) begin
+        // if (mem_read) begin
             case (funct3)
                 3'b000: rdata = {{24{b0[7]}}, b0};      // LB
                 3'b001: rdata = {{16{half[15]}}, half}; // LH
@@ -99,7 +99,7 @@ module dmem #(
                 3'b101: rdata = {16'h0, half};          // LHU
                 default: rdata = word;
             endcase
-        end
+        // end
     end
 
 endmodule

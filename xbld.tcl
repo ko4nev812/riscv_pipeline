@@ -21,6 +21,13 @@ set rtlDir   "$prjDir/src/rtl"
 set simDir   "$prjDir/src/sim"
 
 #---
+set tempDir "$prjDir/temp_cfg_backup"
+file mkdir $tempDir
+foreach f [glob -nocomplain $cfgDir/*.wcfg] {
+    file copy -force $f $tempDir
+}
+
+#---
 file delete -force $cfgDir
 file mkdir $cfgDir
 create_project $prjName $cfgDir -part $prjFPGA
@@ -32,6 +39,7 @@ set fh [open $init_def_file w]
 puts $fh "\`ifndef IMEM_INIT_PATH_SVH"
 puts $fh "\`define IMEM_INIT_PATH_SVH"
 puts $fh "\`define IMEM_INIT_FILE \"$imem_mem_path\""
+puts $fh "\`define DMEM_INIT_FILE \"\""
 puts $fh "\`endif"
 close $fh
 
@@ -44,6 +52,7 @@ add_files -fileset sources_1        \
          $rtlDir/id.sv              \
          $rtlDir/branch_unit_m.sv   \
          $rtlDir/imem_sim_m.sv      \
+         $rtlDir/dmem.sv            \
          $rtlDir/imm_gen.sv         \
          $rtlDir/register_file.sv   \
          $rtlDir/alu.sv             \
@@ -56,6 +65,14 @@ add_files -fileset constrs_1 \
 
 add_files -fileset sim_1  \
          $simDir/rv_nsu_tb.sv
+
+foreach f [glob -nocomplain $tempDir/*.wcfg] {
+    set dest [file join $cfgDir [file tail $f]]
+    file copy -force $f $dest
+    add_files -fileset sim_1 $dest
+}
+
+file delete -force $tempDir  # file mkdir $tempDir
 
 set_property INCLUDE_DIRS "$rtlDir $cfgDir" [get_filesets sim_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]

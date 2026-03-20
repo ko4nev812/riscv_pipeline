@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="rv_nsu_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="risc_v_pkg" />
+            <top_module name="rv_nsu_tb" />
+            <top_module name="tb_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="3333333fs"></ZoomStartTime>
+      <ZoomEndTime time="23333334fs"></ZoomEndTime>
+      <Cursor1Time time="20000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="177"></NameColumnWidth>
+      <ValueColumnWidth column_width="137"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="14" />
+   <wvobject fp_name="/rv_nsu_tb/ref_clk" type="logic">
+      <obj_property name="ElementShortName">ref_clk</obj_property>
+      <obj_property name="ObjectShortName">ref_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/pll_locked" type="logic">
+      <obj_property name="ElementShortName">pll_locked</obj_property>
+      <obj_property name="ObjectShortName">pll_locked</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/rst" type="logic">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu_clk" type="logic">
+      <obj_property name="ElementShortName">cpu_clk</obj_property>
+      <obj_property name="ObjectShortName">cpu_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/imem_addr" type="array">
+      <obj_property name="ElementShortName">imem_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imem_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/instr" type="array">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/asm_instr" type="array">
+      <obj_property name="ElementShortName">asm_instr[0:239]</obj_property>
+      <obj_property name="ObjectShortName">asm_instr[0:239]</obj_property>
+      <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[0]" type="array">
+      <obj_property name="ElementShortName">[0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[1]" type="array">
+      <obj_property name="ElementShortName">[1][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[2]" type="array">
+      <obj_property name="ElementShortName">[2][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[3]" type="array">
+      <obj_property name="ElementShortName">[3][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/b_sel" type="logic">
+      <obj_property name="ElementShortName">b_sel</obj_property>
+      <obj_property name="ObjectShortName">b_sel</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/cpu/dbg_reg" type="array">
+      <obj_property name="ElementShortName">dbg_reg[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dbg_reg[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/rv_nsu_tb/cpu_system_duv/led" type="array">
+      <obj_property name="ElementShortName">led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+   </wvobject>
+</wave_config>
