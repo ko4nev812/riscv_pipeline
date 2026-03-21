@@ -90,12 +90,11 @@ logic id_illegal;
 
 assign imem_addr = pc;
 
-assign dmem_addr   = rf_rd1;  // TODO: +imm
+assign dmem_addr   = rf_rd1 + imm;  // TODO: +imm
 assign dmem_we     = id_output_controls.dmem_we;
 assign dmem_funct3 = instr[14:12];
 assign dmem_read   = (id_output_controls.wb_sel == WB_DMEM_OUT) && !rst;
 assign dmem_wdata  = rf_rd2;
-assign rf_wd3      = dmem_rdata;
 
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
