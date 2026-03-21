@@ -34,8 +34,8 @@ module cpu_system import risc_v_pkg::*;
     `endif
 );
 
-timeunit      1ns;
-timeprecision 1ps;
+//timeunit      1ns;
+//timeprecision 1ps;
 
 //==============================================================================
 `ifdef SIMULATOR

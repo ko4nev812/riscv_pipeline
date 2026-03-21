@@ -9,6 +9,8 @@
 `ifndef RISC_V_SVH
 `define RISC_V_SVH
 
+`timescale 1ns / 1ps
+
 // synopsys translate_off
 `ifndef SIMULATOR
     `define SIMULATOR
@@ -82,8 +84,7 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 //=== ALU section 
 `define ALU_DEFS_ENA
 `ifdef ALU_DEFS_ENA
-localparam int ALU_SEL_LEN = 8;
-localparam ALU_BYP = 4'b0111;  // TODO RENAME in ALU to LUI
+localparam int ALU_SEL_LEN = 4;
 typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_ADD  = 4'b0000,
     ALU_SUB  = 4'b0001,
@@ -267,37 +268,48 @@ function automatic str_t disasm(input Instr_t instr);
 
     logic[8:0] case_key = { instr[30], instr[14:12], instr[6:2] };
 
+    //--- imm generation
+    int imm_i_type = signed'({{20{instr[31]}}, instr[31:20]});
+    int imm_s_type = signed'({{20{instr[31]}}, instr[31:25], instr[11:7]});
+    int imm_b_type = signed'({{19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:9], 2'b00});
+    int imm_u_type = signed'({instr[31:12], 12'b0});
+    int imm_j_type = signed'({{11{instr[31]}}, instr[31], instr[19:12], instr[20], instr[30:22], 2'b00});
+    // copied from feature/imm_gen branch
+
+    logic [4:0] shamt = instr[24:20];
+    //--- imm generation (end)
+
     string format_str;
 
     casex (case_key)
         // MNEMONIC  funct7_funct3_opcode
-        /* LUI   */  'bx_xxx_01101: format_str = $sformatf("lui x%0d, %0d", instr[11:7], instr[31:12]);
-        /* AUIPC */  'bx_xxx_00101: format_str = $sformatf("auipc x%0d, %0d", instr[11:7], instr[31:12]);
-        /* JAL   */  'bx_xxx_11011: format_str = $sformatf("jal x%0d, %0d", instr[11:7], { instr[20],instr[10:1],instr[11],instr[19:12] });
-        /* JALR  */  'b0_000_11001: format_str = $sformatf("jalr x%0d, x%0d, %0d", instr[11:7], instr[19:15], instr[31:20]);
-        /* BEQ   */  'bx_000_11000: format_str = $sformatf("beq x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* BNE   */  'bx_001_11000: format_str = $sformatf("bne x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* BLT   */  'bx_100_11000: format_str = $sformatf("blt x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* BGE   */  'bx_101_11000: format_str = $sformatf("bge x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* BLTU  */  'bx_110_11000: format_str = $sformatf("bltu x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* BGEU  */  'bx_111_11000: format_str = $sformatf("bgeu x%0d, x%0d, %0d", instr[19:15], instr[24:20], { instr[12],instr[10:5] });
-        /* LB    */  'bx_000_00000: format_str = $sformatf("lb x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
-        /* LH    */  'bx_001_00000: format_str = $sformatf("lh x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
-        /* LW    */  'bx_010_00000: format_str = $sformatf("lw x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
-        /* LBU   */  'bx_100_00000: format_str = $sformatf("lbu x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
-        /* LHU   */  'bx_101_00000: format_str = $sformatf("lhu x%0d, %0d(x%0d)", instr[11:7], instr[31:20], instr[19:15]);
-        /* SB    */  'bx_000_01000: format_str = $sformatf("sb x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
-        /* SH    */  'bx_001_01000: format_str = $sformatf("sh x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
-        /* SW    */  'bx_010_01000: format_str = $sformatf("sw x%0d, %0d(x%0d)", instr[24:20], { instr[31:25],instr[11:7] }, instr[19:15]);
-        /* ADDI  */  'bx_000_00100: format_str = $sformatf("addi ");
-        /* SLTI  */  'bx_010_00100: format_str = $sformatf("slti ");
-        /* SLTIU */  'bx_011_00100: format_str = $sformatf("sltiu ");
-        /* XORI  */  'bx_100_00100: format_str = $sformatf("xori ");
-        /* ORI   */  'bx_110_00100: format_str = $sformatf("ori ");
-        /* ANDI  */  'bx_111_00100: format_str = $sformatf("andi ");
-        /* SLLI  */  'b0_001_00100: format_str = $sformatf("slli ");
-        /* SRLI  */  'b0_101_00100: format_str = $sformatf("srli ");
-        /* SRAI  */  'b1_101_00100: format_str = $sformatf("srai ");
+        /* LUI   */  'bx_xxx_01101: format_str = $sformatf("lui x%0d, %0d", instr[11:7], imm_u_type);
+        /* AUIPC */  'bx_xxx_00101: format_str = $sformatf("auipc x%0d, %0d", instr[11:7], imm_u_type);
+        /* JAL   */  'bx_xxx_11011: format_str = $sformatf("jal x%0d, %0d", instr[11:7], imm_j_type);
+        /* JALR  */  'b0_000_11001: format_str = $sformatf("jalr x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* BEQ   */  'bx_000_11000: format_str = $sformatf("beq x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* BNE   */  'bx_001_11000: format_str = $sformatf("bne x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* BLT   */  'bx_100_11000: format_str = $sformatf("blt x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* BGE   */  'bx_101_11000: format_str = $sformatf("bge x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* BLTU  */  'bx_110_11000: format_str = $sformatf("bltu x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* BGEU  */  'bx_111_11000: format_str = $sformatf("bgeu x%0d, x%0d, %0d", instr[19:15], instr[24:20], imm_b_type);
+        /* LB    */  'bx_000_00000: format_str = $sformatf("lb x%0d, %0d(x%0d)", instr[11:7], imm_i_type, instr[19:15]);
+        /* LH    */  'bx_001_00000: format_str = $sformatf("lh x%0d, %0d(x%0d)", instr[11:7], imm_i_type, instr[19:15]);
+        /* LW    */  'bx_010_00000: format_str = $sformatf("lw x%0d, %0d(x%0d)", instr[11:7], imm_i_type, instr[19:15]);
+        /* LBU   */  'bx_100_00000: format_str = $sformatf("lbu x%0d, %0d(x%0d)", instr[11:7], imm_i_type, instr[19:15]);
+        /* LHU   */  'bx_101_00000: format_str = $sformatf("lhu x%0d, %0d(x%0d)", instr[11:7], imm_i_type, instr[19:15]);
+        /* SB    */  'bx_000_01000: format_str = $sformatf("sb x%0d, %0d(x%0d)", instr[24:20], imm_s_type, instr[19:15]);
+        /* SH    */  'bx_001_01000: format_str = $sformatf("sh x%0d, %0d(x%0d)", instr[24:20], imm_s_type, instr[19:15]);
+        /* SW    */  'bx_010_01000: format_str = $sformatf("sw x%0d, %0d(x%0d)", instr[24:20], imm_s_type, instr[19:15]);
+        /* ADDI  */  'bx_000_00100: format_str = $sformatf("addi x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* SLTI  */  'bx_010_00100: format_str = $sformatf("slti x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* SLTIU */  'bx_011_00100: format_str = $sformatf("sltiu x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* XORI  */  'bx_100_00100: format_str = $sformatf("xori x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* ORI   */  'bx_110_00100: format_str = $sformatf("ori x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* ANDI  */  'bx_111_00100: format_str = $sformatf("andi x%0d, x%0d, %0d", instr[11:7], instr[19:15], imm_i_type);
+        /* SLLI  */  'b0_001_00100: format_str = $sformatf("slli x%0d, x%0d, %0d", instr[11:7], instr[19:15], shamt);
+        /* SRLI  */  'b0_101_00100: format_str = $sformatf("srli x%0d, x%0d, %0d", instr[11:7], instr[19:15], shamt);
+        /* SRAI  */  'b1_101_00100: format_str = $sformatf("srai x%0d, x%0d, %0d", instr[11:7], instr[19:15], shamt);
         /* ADD   */  'b0_000_01100: format_str = $sformatf("add x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
         /* SUB   */  'b1_000_01100: format_str = $sformatf("sub x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
         /* SLL   */  'b0_001_01100: format_str = $sformatf("sll x%0d, x%0d, x%0d", instr[11:7], instr[19:15], instr[24:20]);
