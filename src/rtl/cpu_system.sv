@@ -113,7 +113,7 @@ logic clk3;
     );
 
     assign imem_clk = cpu_clk;
-    assign dmem_clk = clk3;
+    assign dmem_clk = clk2;
 `else
     assign cpu_clk  = ref_clk;
     assign imem_clk = cpu_clk;
