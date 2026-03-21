@@ -48,9 +48,16 @@ foreach memFile [glob -nocomplain [file join $prgDir *.mem]] {
     puts $fh "// \`define IMEM_INIT_FILE \"$memPathNormalized\""
 }
 
+# Default IMEM image if none selected above
+puts $fh ""
+puts $fh "// Default IMEM image (used if IMEM_INIT_FILE is not defined above)"
+puts $fh "\`ifndef IMEM_INIT_FILE"
+puts $fh "\`define IMEM_INIT_FILE \"[file normalize [file join $prgDir dmem.mem]]\""
+puts $fh "\`endif  // IMEM_INIT_FILE"
+
 puts $fh ""
 puts $fh "\`define DMEM_INIT_FILE \"\""
-puts $fh "\`endif"
+puts $fh "\`endif  // IMEM_INIT_PATH_SVH"
 close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
