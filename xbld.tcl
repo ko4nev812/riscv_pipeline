@@ -45,7 +45,7 @@ puts $fh "// Available IMEM images - uncomment ONE to use:"
 foreach memFile [glob -nocomplain [file join $prgDir *.mem]] {
     set memPathNormalized [file normalize $memFile]
     # Write commented define for easy switching between images
-    puts $fh "// \`define IMEM_INIT_FILE \"$memPathNormalized\""
+    puts $fh "//\`define IMEM_INIT_FILE \"$memPathNormalized\""
 }
 
 # Default IMEM image if none selected above
