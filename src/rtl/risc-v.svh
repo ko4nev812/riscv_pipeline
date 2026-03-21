@@ -9,6 +9,8 @@
 `ifndef RISC_V_SVH
 `define RISC_V_SVH
 
+`timescale 1ns / 1ps
+
 // synopsys translate_off
 `ifndef SIMULATOR
     `define SIMULATOR

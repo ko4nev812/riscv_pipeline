@@ -13,8 +13,8 @@ module branch_unit_m
     output logic            br_lt
 );
 
-timeunit      1ns;
-timeprecision 1ps;
+//timeunit      1ns;
+//timeprecision 1ps;
 
 always_comb begin
     // comparator

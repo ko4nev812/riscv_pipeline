@@ -33,8 +33,8 @@ module cpu_core_m import risc_v_pkg::*;
     output logic [15:0]  debug  
 );
 
-timeunit      1ns;
-timeprecision 1ps;
+//timeunit      1ns;
+//timeprecision 1ps;
 
 //==============================================================================
 
