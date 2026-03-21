@@ -14,7 +14,7 @@ rm -rf "$LOG_DIR"
 mkdir -p "$LOG_DIR"
 
 # Запуск Vivado в batch‑режиме
-/home/alexubu/Xilinx/Vivado/2019.2/bin/vivado -mode batch          \
+/tools/Xilinx/Vivado/2019.2/bin/vivado -mode batch          \
        -journal "$LOG_DIR/bld.jou" \
        -log     "$LOG_DIR/bld.log" \
        -source  "$BLD_SCRIPT"      \

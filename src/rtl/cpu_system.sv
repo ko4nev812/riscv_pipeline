@@ -53,6 +53,14 @@ logic         imem_clk;
 Addr_t        imem_addr;
 Instr_t       instr;
 
+logic dmem_clk     ;
+logic dmem_read    ;
+logic dmem_we      ;
+Addr_t        dmem_addr;
+Data_t        dmem_wdata;
+Data_t        dmem_rdata;
+logic [2:0]   dmem_funct3;
+
 logic clk2;
 logic clk3;
 
@@ -105,9 +113,11 @@ logic clk3;
     );
 
     assign imem_clk = cpu_clk;
+    assign dmem_clk = clk2;
 `else
     assign cpu_clk  = ref_clk;
     assign imem_clk = cpu_clk;
+    assign dmem_clk = cpu_clk;  // TODO: так надо?
     assign pll_locked = 1'b1;
 `endif // USE_PLL
 
@@ -134,10 +144,29 @@ cpu_core_m cpu
     .instr         ( instr         ),
 
     //--- dmem interface
-    // TBD
+    .dmem_addr      (dmem_addr),
+    .dmem_we        (dmem_we),
+    .dmem_funct3    (dmem_funct3),
+    .dmem_read      (dmem_read),
+    .dmem_wdata     (dmem_wdata),
+    .dmem_rdata     (dmem_rdata),
     
     //--- debug output
     .debug         ( led           )
+);
+
+//---    data memory
+dmem #(
+    .MEM_BYTES(4096),
+    .INIT_FILE(`DMEM_INIT_FILE)
+) dmem_inst (
+    .clk       (dmem_clk),
+    .mem_read  (dmem_read),
+    .mem_write (dmem_we),
+    .addr      (dmem_addr),
+    .wdata     (dmem_wdata),
+    .funct3    (dmem_funct3),
+    .rdata     (dmem_rdata)
 );
 
 //---    instruction memory

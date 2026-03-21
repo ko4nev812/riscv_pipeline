@@ -22,11 +22,14 @@ module cpu_core_m import risc_v_pkg::*;
     input  Instr_t       instr,    
     
     //--- dmem interface (TBD)
-    //output Addr_t        dmem_addr,
-    //output logic         dmem_we,
-    //output ByteDataEna_t dmem_byte_we,
-    //output Data_t        dmem_wd,
-    //input  Data_t        dmem_rd,
+    output Addr_t        dmem_addr,
+    output logic         dmem_we,
+    output logic [2:0]   dmem_funct3,       // TODO: мб лучше не тянуть из core, а взять прямо из system? 
+                                            // или наоборот вынести в core часть логики из dmem
+    output logic         dmem_read,         // вроде бы избыточен?
+    // output ByteDataEna_t dmem_byte_we,   // реализовано в dmem
+    output Data_t        dmem_wdata,
+    input  Data_t        dmem_rdata,
     
     //--- additional status info (i.e. for exceptions)
     //output logic         illegal_instr
@@ -87,6 +90,13 @@ logic id_illegal;
 
 assign imem_addr = pc;
 
+assign dmem_addr   = rf_rd1;  // TODO: +imm
+assign dmem_we     = id_output_controls.dmem_we;
+assign dmem_funct3 = instr[14:12];
+assign dmem_read   = (id_output_controls.wb_sel == WB_DMEM_OUT) && !rst;
+assign dmem_wdata  = rf_rd2;
+assign rf_wd3      = dmem_rdata;
+
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
 
@@ -95,10 +105,8 @@ assign shift_shamt = id_output_controls.b_sel? rf_rd2[4:0] : instr[24:20];
 assign rf_we3 = id_output_controls.reg_wr & !rst;
 
 //source for write to RF: 0: PC+4, 1: ALU out, 2: shifter out, 3: dmem out
-//TODO ADD DMEM
-Data_t dummy_dmem;
-assign rf_wd3 = id_output_controls.wb_sel[1] ? 
-(id_output_controls.wb_sel[0] ? dummy_dmem : shifter_out):
+assign rf_wd3 = id_output_controls.wb_sel[1] ?                  // TODO: есть wb_sel в risc-v.svh
+(id_output_controls.wb_sel[0] ? dmem_rdata : shifter_out):
 (id_output_controls.wb_sel[0] ? alu_out : pc+4);                 // TODO: get pc+4 from the 'PC', in current case we have additional 32-bit adder
 
 assign id_instr.funct7 = instr[30];

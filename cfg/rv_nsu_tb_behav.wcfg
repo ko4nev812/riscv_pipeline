@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="rv_nsu_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="risc_v_pkg" />
+            <top_module name="rv_nsu_tb" />
+            <top_module name="tb_pkg" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="6834825fs"></ZoomStartTime>
+      <ZoomEndTime time="7908869fs"></ZoomEndTime>
+      <Cursor1Time time="6685922fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="217"></NameColumnWidth>
+      <ValueColumnWidth column_width="119"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="27" />
+   <wvobject type="logic" fp_name="/rv_nsu_tb/ref_clk">
+      <obj_property name="ElementShortName">ref_clk</obj_property>
+      <obj_property name="ObjectShortName">ref_clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/pll_locked">
+      <obj_property name="ElementShortName">pll_locked</obj_property>
+      <obj_property name="ObjectShortName">pll_locked</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/rst">
+      <obj_property name="ElementShortName">rst</obj_property>
+      <obj_property name="ObjectShortName">rst</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/cpu_clk">
+      <obj_property name="ElementShortName">cpu_clk</obj_property>
+      <obj_property name="ObjectShortName">cpu_clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/imem_clk">
+      <obj_property name="ElementShortName">imem_clk</obj_property>
+      <obj_property name="ObjectShortName">imem_clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/dmem_clk">
+      <obj_property name="ElementShortName">dmem_clk</obj_property>
+      <obj_property name="ObjectShortName">dmem_clk</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/imem_addr">
+      <obj_property name="ElementShortName">imem_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imem_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/instr">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/instr">
+      <obj_property name="ElementShortName">instr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instr[31:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/asm_instr">
+      <obj_property name="ElementShortName">asm_instr[0:239]</obj_property>
+      <obj_property name="ObjectShortName">asm_instr[0:239]</obj_property>
+      <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/imm_gen_inst/imm">
+      <obj_property name="ElementShortName">imm[31:0]</obj_property>
+      <obj_property name="ObjectShortName">imm[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[0]">
+      <obj_property name="ElementShortName">[0][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[1]">
+      <obj_property name="ElementShortName">[1][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[1][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[2]">
+      <obj_property name="ElementShortName">[2][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[2][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[3]">
+      <obj_property name="ElementShortName">[3][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[3][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[6]">
+      <obj_property name="ElementShortName">[6][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[6][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/regFile[7]">
+      <obj_property name="ElementShortName">[7][31:0]</obj_property>
+      <obj_property name="ObjectShortName">[7][31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/dmem_inst/mem[0]">
+      <obj_property name="ElementShortName">[0][7:0]</obj_property>
+      <obj_property name="ObjectShortName">[0][7:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/dmem_addr">
+      <obj_property name="ElementShortName">dmem_addr[31:0]</obj_property>
+      <obj_property name="ObjectShortName">dmem_addr[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rsi1">
+      <obj_property name="ElementShortName">rsi1[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rsi1[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rs1">
+      <obj_property name="ElementShortName">rs1[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs1[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rsi2">
+      <obj_property name="ElementShortName">rsi2[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rsi2[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rs2">
+      <obj_property name="ElementShortName">rs2[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rs2[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rdi">
+      <obj_property name="ElementShortName">rdi[4:0]</obj_property>
+      <obj_property name="ObjectShortName">rdi[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/rd">
+      <obj_property name="ElementShortName">rd[31:0]</obj_property>
+      <obj_property name="ObjectShortName">rd[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/rv_nsu_tb/cpu_system_duv/cpu/rf_inst/we">
+      <obj_property name="ElementShortName">we</obj_property>
+      <obj_property name="ObjectShortName">we</obj_property>
+   </wvobject>
+</wave_config>
