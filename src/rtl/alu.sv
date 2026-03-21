@@ -24,7 +24,7 @@ always_comb begin
                    res = a + b;
                    res[0] = 0;
                  end
-    ALU_BYP    : res = b; // bypass
+    ALU_LUI    : res = b; // bypass
     default: res = 'X;
   endcase
 end

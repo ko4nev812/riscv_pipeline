@@ -82,8 +82,7 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 //=== ALU section 
 `define ALU_DEFS_ENA
 `ifdef ALU_DEFS_ENA
-localparam int ALU_SEL_LEN = 8;
-localparam ALU_BYP = 4'b0111;  // TODO RENAME in ALU to LUI
+localparam int ALU_SEL_LEN = 4;
 typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_ADD  = 4'b0000,
     ALU_SUB  = 4'b0001,
