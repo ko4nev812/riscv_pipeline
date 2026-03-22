@@ -82,8 +82,6 @@ localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
 //===IMEM section (end)
 
 //=== ALU section 
-`define ALU_DEFS_ENA
-`ifdef ALU_DEFS_ENA
 localparam int ALU_SEL_LEN = 4;
 typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_ADD  = 4'b0000,
@@ -97,7 +95,6 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
     ALU_JALR = 4'b1000,
     ALU_ANY  = 4'bxxxx   
 } ALU_SEL_t;
-`endif
 //=== ALU section (end)
 
 //=== Shifter section
@@ -187,21 +184,6 @@ localparam SHIFT_SLL = 3'b100;
 localparam SHIFT_SRL = 3'b010;
 localparam SHIFT_SRA = 3'b001;
 localparam SHIFT_ANY = 3'bxxx;
-
-// alu_sel
-
-/*
-localparam ALU_ADD  = 4'b0000;
-localparam ALU_SUB  = 4'b0001;
-localparam ALU_AND  = 4'b0010;
-localparam ALU_OR   = 4'b0011;
-localparam ALU_XOR  = 4'b0100;
-localparam ALU_SLT  = 4'b0101;
-localparam ALU_SLTU = 4'b0110;
-localparam ALU_LUI  = 4'b0111;
-localparam ALU_JALR = 4'b1000;
-localparam ALU_ANY  = 4'bxxxx;
-*/
 
 // wb_sel
 localparam WB_PC4_OUT     = 2'b00;
