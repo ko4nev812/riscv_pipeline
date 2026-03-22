@@ -3,6 +3,7 @@ puts "=================== create prj"
 #---
 set build_pll_ip  1
 set build_imem_ip 0
+set build_tdp_bram_ip 0 ; # TODO: supress warnings about AXI unconnected
 
 #---
 set prjName rv-nsu
@@ -144,7 +145,6 @@ if $build_pll_ip {
 if $build_imem_ip {
     puts "\n------------------- create Simple_Dual_Port_RAM IP"
     set ip_imem_name "blk_mem_sdp"
-    set Coe_File "$prjDir/imem.hex"
     set bitWidth 32
     set memDepth 1024
 
@@ -167,8 +167,7 @@ if $build_imem_ip {
         CONFIG.Enable_B {Use_ENB_Pin}              \
         CONFIG.Register_PortA_Output_of_Memory_Primitives {false} \
         CONFIG.Register_PortB_Output_of_Memory_Primitives {false} \
-        CONFIG.Load_Init_File {true} \
-        CONFIG.Coe_File  $Coe_File \
+        CONFIG.Load_Init_File {false} \
         CONFIG.Fill_Remaining_Memory_Locations {true} \
         CONFIG.Remaining_Memory_Locations {800000ec} \
         CONFIG.Port_B_Clock {100} \
@@ -195,3 +194,60 @@ if $build_imem_ip {
     #---
     reset_msg_config -suppress -id {Synth 8-3331}
 }
+
+#--- IP (True Dual-Port Block RAM)
+if $build_tdp_bram_ip {
+    puts "\n------------------- create True_Dual_Port_RAM IP"
+    set ip_imem_name "tdp_bram_ip"
+    set bitWidth 32
+    set byteSize 8
+    set memDepth 1024
+
+    file mkdir $ipDir
+    set ip_imem_dir "$ipDir/$ip_imem_name"
+    file delete -force $ip_imem_dir
+
+    create_ip -name blk_mem_gen -vendor xilinx.com -library ip -version 8.4 -module_name $ip_imem_name -dir $ipDir
+    set_property -dict [ \
+        list CONFIG.Component_Name {tdp_bram_ip}                  \
+        CONFIG.Memory_Type {True_Dual_Port_RAM}                   \
+        CONFIG.Use_Byte_Write_Enable {true}                       \
+        CONFIG.Byte_Size     $byteSize                            \
+        CONFIG.Write_Width_A $bitWidth                            \
+        CONFIG.Write_Depth_A $memDepth                            \
+        CONFIG.Read_Width_A  $bitWidth                            \
+        CONFIG.Operating_Mode_A {READ_FIRST}                      \
+        CONFIG.Enable_A {Use_ENA_Pin}                             \
+        CONFIG.Write_Width_B $bitWidth                            \
+        CONFIG.Read_Width_B $bitWidth                             \
+        CONFIG.Operating_Mode_B {READ_FIRST}                      \
+        CONFIG.Enable_B {Use_ENB_Pin}                             \
+        CONFIG.Register_PortA_Output_of_Memory_Primitives {false} \
+        CONFIG.Register_PortB_Output_of_Memory_Primitives {false} \
+        CONFIG.Fill_Remaining_Memory_Locations {true}             \
+        CONFIG.Port_B_Clock {100}                                 \
+        CONFIG.Port_B_Write_Rate {50}                             \
+        CONFIG.Port_B_Enable_Rate {100}                           \
+    ] [get_ips $ip_imem_name]
+
+    generate_target {instantiation_template} [get_files $ip_imem_dir/$ip_imem_name.xci]
+    update_compile_order -fileset sources_1
+    generate_target all [get_files  $ip_imem_dir/$ip_imem_name.xci]
+    catch { config_ip_cache -export [get_ips -all $ip_imem_name] }
+    export_ip_user_files -of_objects [get_files $ip_imem_dir/$ip_imem_name.xci] -no_script -sync -force -quiet
+    create_ip_run [get_files -of_objects [get_fileset sources_1] $ip_imem_dir/$ip_imem_name.xci]
+
+    #---
+    set_msg_config -suppress -id {Synth 8-3331}
+    #set_msg_config -suppress -id {Synth 8-3331} -string {blk_mem_output_block}
+    #set_msg_config -suppress -id {Synth 8-3331} -string {blk_mem_gen_prim_wrapper_init}
+    #set_msg_config -suppress -id {Synth 8-3331} -string {blk_mem_gen_generic_cstr}
+    #set_msg_config -suppress -id {Synth 8-3331} -string {blk_mem_input_block}
+
+    #---
+    launch_runs ${ip_imem_name}_synth_1 -jobs 4
+    wait_on_run ${ip_imem_name}_synth_1
+
+    #---
+    reset_msg_config -suppress -id {Synth 8-3331}
+}    
