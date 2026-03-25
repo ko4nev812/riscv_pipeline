@@ -101,9 +101,10 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
 typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
 
 typedef enum logic [2:0] {
-    SLLI = 3'b100,
-    SRLI = 3'b010,
-    SRAI = 3'b001
+    SHIFT_SLL = 3'b100,
+    SHIFT_SRL = 3'b010,
+    SHIFT_SRA = 3'b001,
+    SHIFT_ANY = 3'bxxx
 } shift_sel_t;
 //=== Shifter section (end)
 
@@ -179,11 +180,7 @@ typedef struct packed {
     Imm_type_t imm_type;
 } Id_controls_out_t;
 
-// sh_sel
-localparam SHIFT_SLL = 3'b100;
-localparam SHIFT_SRL = 3'b010;
-localparam SHIFT_SRA = 3'b001;
-localparam SHIFT_ANY = 3'bxxx;
+
 
 // wb_sel
 localparam WB_PC4_OUT     = 2'b00;
