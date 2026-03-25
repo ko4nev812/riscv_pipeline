@@ -57,6 +57,8 @@ localparam int RF_ADDR_WIDTH   = 5;                  // RISC-V ISA dependent (?)
 // (reserved) localparam int DATA_BYTE_NUM   = 2**BYTE_ADDR_WIDTH; // number of bytes in data word with length = XLEN
 
 //--------------------------------------------------------------------------
+typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
+
 // (reserved) typedef logic [7:0]                     Byte_t;
 
 typedef logic [XLEN-1:0]                Data_t;
@@ -69,7 +71,6 @@ typedef logic [INSTR_LEN-1:0]           Instr_t;
 
 // (reserved) typedef logic [6:0]                     Opcode_t;       // instruction opcode part,   fixed for all RISC-V instr. types
 // (reserved) typedef logic [24:0]                    InstrVarPart_t; // instruction variadic part, different for R,I,S,B,U,J RISC-V instr. types   
-
 
 
 //localparam Addr_t PC_START_ADDR = 32'H_0040_0000;
@@ -97,7 +98,7 @@ typedef enum logic [ALU_SEL_LEN-1:0] {
 } ALU_SEL_t;
 //=== ALU section (end)
 
-//=== Shifter section
+//=== SHIFTER section
 typedef logic [$clog2(XLEN)-1:0] shift_shamt_t;
 
 typedef enum logic [2:0] {
@@ -106,7 +107,7 @@ typedef enum logic [2:0] {
     SHIFT_SRA = 3'b001,
     SHIFT_ANY = 3'bxxx
 } shift_sel_t;
-//=== Shifter section (end)
+//=== SHIFTER section (end)
 
 
 //=== IMM_GEN section
@@ -181,7 +182,6 @@ typedef struct packed {
 } Id_controls_out_t;
 
 
-
 // wb_sel
 localparam WB_PC4_OUT     = 2'b00;
 localparam WB_ALU_OUT     = 2'b01;
@@ -190,7 +190,7 @@ localparam WB_DMEM_OUT    = 2'b11;
 localparam WB_ANY         = 2'bxx;
 
 // instruction type
-localparam INSTR_TYPE_R   = 3'b000;
+// localparam INSTR_TYPE_R   = 3'b000;  <--- Not used
 localparam INSTR_TYPE_I   = 3'b001;
 localparam INSTR_TYPE_S   = 3'b010;
 localparam INSTR_TYPE_B   = 3'b011;
@@ -199,27 +199,9 @@ localparam INSTR_TYPE_J   = 3'b101;
 localparam INSTR_TYPE_ANY = 3'bxxx;
 
 `ifdef ID_DEFS_ENA
-
-localparam int ADDI_IMM_LEN  = 12;
-
-typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
 `endif
 //=== ID section (end)
 
-//=== Branch unit (end)
-localparam int BRU_SEL_LEN = 3;
-
-// BLTU/BGEU = BRU_BLT/BRU_BGE + br_un=1
-typedef enum logic [BRU_SEL_LEN-1:0] {
-    BRU_NONE = 3'b000,
-    BRU_JAL  = 3'b001,
-    BRU_JALR = 3'b010,
-    BRU_BEQ  = 3'b011,
-    BRU_BNE  = 3'b100,
-    BRU_BLT  = 3'b101,
-    BRU_BGE  = 3'b110
-} BRU_SEL_t;
-//=== Branch unit (end)
 
 //=== DEBUG
 
