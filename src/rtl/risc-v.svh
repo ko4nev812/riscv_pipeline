@@ -153,6 +153,17 @@ typedef struct packed {
     logic  br_lt;
 } Id_controls_in_t;
 
+
+localparam int WB_SEL_LEN = 2;
+typedef enum logic [WB_SEL_LEN-1:0] {
+    WB_PC4_OUT     = 2'b00,
+    WB_ALU_OUT     = 2'b01,
+    WB_SHIFTER_OUT = 2'b10,
+    WB_DMEM_OUT    = 2'b11,
+    WB_ANY         = 2'bxx 
+} WB_SEL_t;
+
+
 /*
  * Instruction decoder control OUTPUT signals.
  *
@@ -177,17 +188,10 @@ typedef struct packed {
     logic        br_un;
     logic        pc_sel;
     ALU_SEL_t    alu_sel;
-    logic [1:0]  wb_sel;
-    Imm_type_t imm_type;
+    WB_SEL_t     wb_sel;
+    Imm_type_t   imm_type;
 } Id_controls_out_t;
 
-
-// wb_sel
-localparam WB_PC4_OUT     = 2'b00;
-localparam WB_ALU_OUT     = 2'b01;
-localparam WB_SHIFTER_OUT = 2'b10;
-localparam WB_DMEM_OUT    = 2'b11;
-localparam WB_ANY         = 2'bxx;
 
 // instruction type
 // localparam INSTR_TYPE_R   = 3'b000;  <--- Not used

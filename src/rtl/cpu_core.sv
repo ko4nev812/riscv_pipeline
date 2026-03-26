@@ -104,9 +104,15 @@ assign shift_shamt = id_output_controls.b_sel? rf_rd2[4:0] : instr[24:20];
 assign rf_we3 = id_output_controls.reg_wr & !rst;
 
 //source for write to RF: 0: PC+4, 1: ALU out, 2: shifter out, 3: dmem out
-assign rf_wd3 = id_output_controls.wb_sel[1] ?                  // TODO: есть wb_sel в risc-v.svh
-(id_output_controls.wb_sel[0] ? dmem_rdata : shifter_out):
-(id_output_controls.wb_sel[0] ? alu_out : pc+4);                 // TODO: get pc+4 from the 'PC', in current case we have additional 32-bit adder
+always_comb begin
+    case (id_output_controls.wb_sel)
+        WB_PC4_OUT     : rf_wd3 = pc+4;
+        WB_ALU_OUT     : rf_wd3 = alu_out;
+        WB_SHIFTER_OUT : rf_wd3 = shifter_out;
+        WB_DMEM_OUT    : rf_wd3 = dmem_rdata;
+        default: rf_wd3 = 'X;
+    endcase
+end
 
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
