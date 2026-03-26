@@ -194,13 +194,16 @@ typedef struct packed {
 
 
 // instruction type
-// localparam INSTR_TYPE_R   = 3'b000;  <--- Not used
-localparam INSTR_TYPE_I   = 3'b001;
-localparam INSTR_TYPE_S   = 3'b010;
-localparam INSTR_TYPE_B   = 3'b011;
-localparam INSTR_TYPE_U   = 3'b100;
-localparam INSTR_TYPE_J   = 3'b101;
-localparam INSTR_TYPE_ANY = 3'bxxx;
+localparam int INSTR_TYPE_LEN = 3;
+typedef enum logic [INSTR_TYPE_LEN-1:0] {
+  //  INSTR_TYPE_R     = 3'b000,  <--- Not used
+    INSTR_TYPE_I     = 3'b001,
+    INSTR_TYPE_S     = 3'b010,
+    INSTR_TYPE_B     = 3'b011,
+    INSTR_TYPE_U     = 3'b100,
+    INSTR_TYPE_J     = 3'b101,
+    INSTR_TYPE_ANY   = 3'bxxx
+} INSTR_TYPE_t;
 
 `ifdef ID_DEFS_ENA
 `endif
