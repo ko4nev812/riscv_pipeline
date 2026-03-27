@@ -48,7 +48,7 @@ module dual_port_mem_m
 
 `ifdef DUAL_PORT_BRAM_MEM_IP
 
-tdp_bram tdp_bram_inst
+tdp_bram_ip tdp_bram_inst
 (
     //--- port A
     .clka     ( clka  ),
