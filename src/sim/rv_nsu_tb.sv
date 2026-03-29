@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------
 
 `include "tb.svh"
+`include "trace_logger.svh"
 `include "risc-v.svh"
 
 //******************************************************************************
@@ -33,9 +34,29 @@ end
 
 //--- simulation stop
 initial begin
-    #20000ns;
+    #50us;
     $stop(0);
 end
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//--- Trace Logger process
+
+parameter int MAX_INSTR_NUM = 100;
+
+cpu_if_t cpu_if
+(
+    .clk        ( cpu_system_duv.cpu_clk    ),
+    .rst        ( cpu_system_duv.rst        ),
+    .rst_strobe ( cpu_system_duv.rst_strobe ),
+    .iaddr      ( cpu_system_duv.imem_addr  ),
+    .instr      ( cpu_system_duv.instr      )
+);
+
+initial begin
+    static TraceLogger tl = new(cpu_if, MAX_INSTR_NUM);
+    tl.run();
+end
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //==============================================================================
 
