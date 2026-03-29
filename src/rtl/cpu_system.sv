@@ -38,12 +38,6 @@ module cpu_system import risc_v_pkg::*;
 //timeprecision 1ps;
 
 //==============================================================================
-`ifdef SIMULATOR
-str_t asm_instr;
-assign asm_instr = disasm(instr);
-`endif
-
-//==============================================================================
 
 logic cpu_clk;
 logic rst;
@@ -63,6 +57,18 @@ logic [2:0]   dmem_funct3;
 
 logic clk2;
 logic clk3;
+
+logic rst_strobe;
+logic cpu_rst;
+
+assign cpu_rst = rst | rst_strobe;
+
+//==============================================================================
+`ifdef SIMULATOR
+str_t asm_instr;
+assign asm_instr = disasm(instr);
+`endif
+
 
 //==============================================================================
 `ifdef SYS_DEBUG_OUT
