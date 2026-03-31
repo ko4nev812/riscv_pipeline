@@ -34,14 +34,18 @@ end
 
 //--- simulation stop
 initial begin
-    #50us;
+    #100us;
     $stop(0);
 end
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //--- Trace Logger process
 
+parameter logic STANDALONE_TEST = 1;
 parameter int MAX_INSTR_NUM = 100;
+
+string test_name;
+risc_v_pkg::str_t  str_test_name;
 
 cpu_if_t cpu_if
 (
@@ -49,11 +53,14 @@ cpu_if_t cpu_if
     .rst        ( cpu_system_duv.rst        ),
     .rst_strobe ( cpu_system_duv.rst_strobe ),
     .iaddr      ( cpu_system_duv.imem_addr  ),
-    .instr      ( cpu_system_duv.instr      )
+    .instr      ( cpu_system_duv.instr      ),
+    .test_name  ( test_name                 )
 );
 
+assign str_test_name = risc_v_pkg::string2str(test_name);
+
 initial begin
-    static TraceLogger tl = new(cpu_if, MAX_INSTR_NUM);
+    static TraceLogger tl = new(cpu_if, MAX_INSTR_NUM, STANDALONE_TEST);
     tl.run();
 end
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
