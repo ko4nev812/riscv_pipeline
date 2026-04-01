@@ -34,7 +34,7 @@ end
 
 //--- simulation stop
 initial begin
-    #100us;
+    #1000us;
     $stop(0);
 end
 
@@ -42,7 +42,7 @@ end
 //--- Trace Logger process
 
 parameter logic STANDALONE_TEST = 1;
-parameter int MAX_INSTR_NUM = 100;
+parameter int MAX_INSTR_NUM = 200;
 
 string test_name;
 risc_v_pkg::str_t  str_test_name;
