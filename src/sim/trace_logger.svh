@@ -44,6 +44,7 @@ typedef enum int {
 
 //------------------------------------------------------------------------------
 class TraceLogger;
+    const int NREGS = 32;
     cpu_vif_t cpu_vif;
     int instr_cnt;
     string test_dir; 
@@ -72,10 +73,35 @@ class TraceLogger;
     endfunction : init_RF
 
     //--------------------------------------------------------------------------
+    function int get_reg(input int reg_idx);
+        return  `RF_OBJ_NAME[reg_idx];
+    endfunction : get_reg
+
+    //--------------------------------------------------------------------------
     function Test_Result_t test_stop_condition();
-        int reg_val = `RF_OBJ_NAME[`RF_DBG_NUM];
+        int reg_val = get_reg(`RF_DBG_NUM);
         return Test_Result_t'(reg_val);
     endfunction : test_stop_condition
+
+    //--------------------------------------------------------------------------
+    function string get_test_name(input string fname);
+        int i = 0;
+        for(i = 0; i < fname.len(); i++) begin
+            if(fname[i] == ".")
+                break;
+        end    
+        return fname.substr(0, i-1);
+    endfunction : get_test_name
+
+    //--------------------------------------------------------------------------
+    function void print_header(input integer fd);
+        int i;
+        $fwrite(fd,"model_time, instr_count, instr_addr, instr_code, disasm");
+        for(i = 0; i < NREGS; i++) begin
+            $fwrite(fd,", x%1d", i);
+        end
+        $fwrite(fd,"\n");    
+    endfunction : print_header
 
     //--------------------------------------------------------------------------
     function void get_test_list();
@@ -101,9 +127,13 @@ class TraceLogger;
 
     //--------------------------------------------------------------------------
     task run();
-        string fname;
+        string test_file_full_name;
+        string test_file_short_name;
+        string test_base_name;
         int test_idx;
         Test_Result_t test_res;
+        integer fd_res;
+        int i;
 
         //---
         $display("=== TraceLogger run() start");
@@ -116,12 +146,16 @@ class TraceLogger;
 
         fork
             for(test_idx = 0; test_idx < test_array.size(); test_idx++) begin
-                fname = { test_dir, "/", test_array[test_idx] };
-                cpu_vif.test_name = test_array[test_idx];
+                test_file_short_name = test_array[test_idx];
+                test_base_name = get_test_name(test_file_short_name);
+                test_file_full_name = { test_dir, "/", test_file_short_name };
+                fd_res = $fopen({ test_dir, "/res/", test_base_name, ".csv" },"w");
+                print_header(fd_res);
+                cpu_vif.test_name = test_file_short_name;
                 $display("+++ test: %4d (%12s) started", test_idx+1, cpu_vif.test_name);
                 cpu_vif.rst_strobe = 1'b1;
                 repeat (2) @(posedge cpu_vif.clk);
-                load_imem(fname);
+                load_imem(test_file_full_name);
                 init_RF();
                 repeat (8) @(posedge cpu_vif.clk);
                 cpu_vif.rst_strobe = 1'b0;
@@ -132,7 +166,13 @@ class TraceLogger;
                     @(posedge cpu_vif.clk);
                     if(!cpu_vif.rst) begin
                         instr_cnt++;
-                        //$display("%t %6d %8x %8x %s", $realtime, instr_cnt, cpu_vif.iaddr, cpu_vif.instr, risc_v_pkg::disasm(cpu_vif.instr));
+                        //--- TODO: make function
+                        $fwrite(fd_res,"%t %6d %8x %8x \"%s\"", $realtime, instr_cnt, cpu_vif.iaddr, cpu_vif.instr, risc_v_pkg::disasm(cpu_vif.instr));
+                        for(i = 0; i < NREGS; i++) begin
+                            $fwrite(fd_res,", %8x", get_reg(i));
+                        end
+                        $fwrite(fd_res,"\n");    
+                        //---
                         if(instr_cnt >= max_instr_num) begin
                             if(standalone_test) begin
                                 $display("--- test: %4d (%s) FAIL, max_instr_num reached\n", test_idx+1, cpu_vif.test_name);
@@ -158,8 +198,12 @@ class TraceLogger;
                     end    
                 end
                 //---
+                $fclose(fd_res);
             end    
         join
+        cpu_vif.rst_strobe = 1'b1;
+        cpu_vif.test_name = "finish";
+        repeat (20) @(posedge cpu_vif.clk);
         $display("=== TraceLogger run() end");
     endtask : run
 

@@ -62,6 +62,7 @@ assign str_test_name = risc_v_pkg::string2str(test_name);
 initial begin
     static TraceLogger tl = new(cpu_if, MAX_INSTR_NUM, STANDALONE_TEST);
     tl.run();
+    $stop(0);
 end
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
