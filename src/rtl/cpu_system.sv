@@ -58,7 +58,7 @@ logic [2:0]   dmem_funct3;
 logic clk2;
 logic clk3;
 
-logic rst_strobe;
+logic rst_strobe = 1'b0;
 logic cpu_rst;
 
 assign cpu_rst = rst | rst_strobe;
