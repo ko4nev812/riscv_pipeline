@@ -10,13 +10,13 @@ from pathlib import Path
 # ============================================================
 
 # Input directory with source files (.s, .asm)
-IN_DIR = Path("./tests")
+IN_DIR = Path("./uBench")
 
 # Output directory for .hex files
-OUT_DIR = Path("./hex_out")
+OUT_DIR = Path("./uBench/hex")
 
 # Path to RARS (either .jar file or executable)
-RARS_PATH = Path("./rars1_6.jar")
+RARS_PATH = Path("C:/Users/User/10-RV-NSU/sim/rars1_6.jar")
 
 # Additional flags for RARS
 #RARS_FLAGS = ["--quiet", "--dump", ".text", ".data", "HEX"]
