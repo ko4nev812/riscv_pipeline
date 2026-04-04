@@ -10,6 +10,9 @@
 `include "trace_logger.svh"
 `include "risc-v.svh"
 
+`define TRACE_LOGGER_ENA
+
+
 //******************************************************************************
 //******************************************************************************
 module rv_nsu_tb import tb_pkg::*;
@@ -34,7 +37,11 @@ end
 
 //--- simulation stop
 initial begin
+`ifdef TRACE_LOGGER_ENA
     #1000us;
+`else
+    #20us;
+`endif  
     $stop(0);
 end
 

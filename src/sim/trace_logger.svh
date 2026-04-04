@@ -17,8 +17,8 @@
 `define RF_OBJ_NAME   $root.rv_nsu_tb.cpu_system_duv.cpu.rf_inst.regFile
 `define RF_DBG_NUM    31
 
-string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench"; // TODO: use tcl generated names
-string TEST_LST = "ub.lst";                                             // TODO: use tcl generated names
+string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench/hex"; // TODO: use tcl generated names
+string TEST_LST = "ub.lst";                                                 // TODO: use tcl generated names
 
 
 //------------------------------------------------------------------------------
