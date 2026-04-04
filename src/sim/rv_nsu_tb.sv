@@ -41,6 +41,9 @@ end
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //--- Trace Logger process
 
+//`define TRACE_LOGGER_ENA
+
+`ifdef TRACE_LOGGER_ENA
 parameter logic STANDALONE_TEST = 1;
 parameter int MAX_INSTR_NUM = 200;
 
@@ -64,6 +67,7 @@ initial begin
     tl.run();
     $stop(0);
 end
+`endif  // TRACE_LOGGER_ENA
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 //==============================================================================
