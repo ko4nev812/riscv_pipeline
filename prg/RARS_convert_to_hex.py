@@ -27,11 +27,10 @@ RARS_PATH = Path("./rars1_6.jar")
 # ============================================================
 
 def find_asm_files(directory: Path):
-    """Recursively find all .s and .asm files in directory"""
-    asm_files = []
-    for ext in ["*.s", "*.asm", "*.S"]:
-        asm_files.extend(directory.rglob(ext))
-    return asm_files
+    return [
+        f for f in directory.rglob("*")
+        if f.suffix.lower() in [".s", ".asm"]
+    ]
 
 
 def convert_to_hex(asm_file: Path, hex_file: Path) -> bool:
