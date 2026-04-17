@@ -54,7 +54,6 @@ Addr_t        imem_addr;
 Instr_t       instr;
 
 logic         dmem_clka;
-logic         dmem_read;
 ByteDataEna_t dmem_byte_we;
 DmemAddr_t    dmem_addr;
 Data_t        dmem_wdata;
@@ -136,7 +135,6 @@ cpu_core_m cpu
     //--- dmem interface
     .dmem_addr      (dmem_addr), 
     .dmem_byte_we   (dmem_byte_we), 
-    .dmem_read      (dmem_read),  
     .dmem_data_in   (dmem_wdata), 
     .dmem_data_out  (dmem_rdata), 
     
@@ -149,7 +147,7 @@ dual_port_mem_m dmem_inst
 (
     //--- port A
     .clka (dmem_clka),
-    .ena (dmem_read),
+    .ena   (1'b1),
     .wea (dmem_byte_we),
     .addra(dmem_addr),
     .dina (dmem_wdata), 

@@ -25,7 +25,6 @@ module cpu_core_m import risc_v_pkg::*;
     output DmemAddr_t    dmem_addr,
     output ByteDataEna_t dmem_byte_we,
     output Data_t        dmem_data_in,
-    output logic         dmem_read,       // вроде бы избыточен?
     input  Data_t        dmem_data_out,
     
 
@@ -100,9 +99,8 @@ assign dmem_tmp_addr   = rf_rd1 + imm;  // TODO: +imm
 assign dmem_we     = id_output_controls.dmem_we;
 assign dmem_funct3 = instr[14:12];
 assign dmem_byte_off = dmem_tmp_addr[1:0];
-assign dmem_read   = (id_output_controls.wb_sel == WB_DMEM_OUT) && !rst;
 assign dmem_wdata_in  = rf_rd2;
-assign dmem_addr = dmem_tmp_addr[13:2]; 
+assign dmem_addr = dmem_tmp_addr[DMEM_PORT_ADDR_WIDTH+1:2]; 
 
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
