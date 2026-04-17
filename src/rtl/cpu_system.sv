@@ -99,27 +99,18 @@ logic clk3;
 
 
 //---
-`define USE_PLL
-`ifdef USE_PLL
-    //(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY  *)
-    pll pll_inst
-    (
-        .clk_in    ( ref_clk    ),
-        .clk_out1  ( cpu_clk    ),
-        .clk_out2  ( clk2       ),
-        .clk_out3  ( clk3       ),
-        .locked    ( pll_locked )
-    );
+//(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY  *)
+pll pll_inst
+(
+    .clk_in    ( ref_clk    ),
+    .clk_out1  ( cpu_clk    ),
+    .clk_out2  ( clk2       ),
+    .clk_out3  ( clk3       ),
+    .locked    ( pll_locked )
+);
 
-    assign imem_clk = cpu_clk;
-    assign dmem_clka = clk2;
-`else
-    assign cpu_clk  = ref_clk;
-    assign imem_clk = cpu_clk;
-    assign dmem_clka = cpu_clk;  // TODO: так надо?
-    assign pll_locked = 1'b1;
-`endif // USE_PLL
-
+assign imem_clk = cpu_clk;
+assign dmem_clka = clk2;
 
 //--- reset (related to clk)
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
