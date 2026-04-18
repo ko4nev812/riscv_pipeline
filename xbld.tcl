@@ -53,7 +53,7 @@ foreach memFile [glob -nocomplain [file join $prgDir *.mem]] {
 puts $fh ""
 puts $fh "// Default IMEM image (used if IMEM_INIT_FILE is not defined above)"
 puts $fh "\`ifndef IMEM_INIT_FILE"
-puts $fh "\`define IMEM_INIT_FILE \"[file normalize [file join $prgDir imem.mem]]\""
+puts $fh "\`define IMEM_INIT_FILE \"[file normalize [file join $prgDir default.mem]]\""
 puts $fh "\`endif  // IMEM_INIT_FILE"
 
 puts $fh ""
