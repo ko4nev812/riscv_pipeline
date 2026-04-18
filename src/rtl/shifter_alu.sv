@@ -26,11 +26,12 @@ module risc_v_shifter_m
 
 `else  // SHIFTER_ABSTRACT
 
+  logic [XLEN-1:0] curData;
+  logic [XLEN-1:0] tmp;
+
   always_comb begin  // shifter_logic
 
-    logic [XLEN-1:0] curData = data;
-    logic [XLEN-1:0] tmp;
-
+    curData = data;
 
     if (sel == SHIFT_SLL) begin  // SHIFT_SLL
 
@@ -78,7 +79,7 @@ module risc_v_shifter_m
     end  // SHIFT_SRA and SHIFT_SRL    
 
     else begin // default
-      res = 'X;
+      curData = 'X;
     end  // default
 
     res = curData;
