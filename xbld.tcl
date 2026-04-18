@@ -109,7 +109,7 @@ if $build_pll_ip {
     puts "\n------------------- create PLL IP"
     set ip_pll_name   "pll"
     set ip_pll_clk    10.0
-    set ip_pll_phase2 45.0
+    set ip_pll_phase2 200.0
     set ip_pll_phase3 90.0
 
     file mkdir $ipDir
