@@ -40,16 +40,16 @@ always_comb begin
     data_out = '0;
 
     if (dmem_we) begin
-        case (funct3[1:0])
-            2'b00: begin // SB
+        casex (funct3)
+            3'bx00: begin // SB
                 data_out = {DATA_BYTE_NUM{data_in[7:0]}};
                 we       = 4'b0001 << byte_addr;
             end
-            2'b01: begin // SH
+            3'bx01: begin // SH
                 data_out = {(DATA_BYTE_NUM/2){data_in[15:0]}};
                 we       = byte_addr[1] ? 4'b1100 : 4'b0011;
             end
-            2'b10: begin // SW
+            3'bx10: begin // SW
                 data_out = data_in;
                 we       = '1;
             end
