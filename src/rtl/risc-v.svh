@@ -53,20 +53,20 @@ localparam int DMEM_ADDR_WIDTH = 8;                  // (byte addressed) CPU sys
 
 localparam int INSTR_LEN       = 32;                 // fixed for all RISC-V ISA except RVC
 localparam int RF_ADDR_WIDTH   = 5;                  // RISC-V ISA dependent (?)
-// (reserved) localparam int BYTE_ADDR_WIDTH = $clog2(XLEN/8);     // number of lower address bits - for select byte in word
-// (reserved) localparam int DATA_BYTE_NUM   = 2**BYTE_ADDR_WIDTH; // number of bytes in data word with length = XLEN
-
+parameter int DATA_BYTE_NUM   = XLEN / 8;
+parameter int BYTE_ADDR_WIDTH = $clog2(DATA_BYTE_NUM);
+parameter int DMEM_PORT_ADDR_WIDTH = 12;
 //--------------------------------------------------------------------------
-typedef logic [RF_ADDR_WIDTH-1:0] RegAddr_t;
+typedef logic [RF_ADDR_WIDTH-1:0]        RegAddr_t;
+typedef logic [XLEN-1:0]                 Data_t;
+typedef logic [DATA_BYTE_NUM-1:0]        ByteDataEna_t;
+typedef logic [7:0]                      Byte_t;
+typedef logic [BYTE_ADDR_WIDTH-1:0]      ByteAddr_t;
+typedef logic [INSTR_LEN-1:0]            Instr_t;
+typedef Byte_t                           ByteData_t [DATA_BYTE_NUM];
+typedef Data_t                           Addr_t;
+typedef logic [DMEM_PORT_ADDR_WIDTH-1:0] DmemAddr_t;
 
-// (reserved) typedef logic [7:0]                     Byte_t;
-
-typedef logic [XLEN-1:0]                Data_t;
-// (reserved) typedef logic [DATA_BYTE_NUM-1:0]       ByteDataEna_t;
-// (reserved) typedef Byte_t [DATA_BYTE_NUM-1:0]      ByteData_t;
-typedef Data_t                          Addr_t;
-// (reserved) typedef logic [BYTE_ADDR_WIDTH-1:0]     ByteAddr_t;
-typedef logic [INSTR_LEN-1:0]           Instr_t;
 // (reserved) typedef logic [$clog2(XLEN)-1:0]        Shamt_t;        // shift amount
 
 // (reserved) typedef logic [6:0]                     Opcode_t;       // instruction opcode part,   fixed for all RISC-V instr. types
@@ -208,6 +208,16 @@ typedef enum logic [INSTR_TYPE_LEN-1:0] {
 `ifdef ID_DEFS_ENA
 `endif
 //=== ID section (end)
+
+//===DMEM section
+typedef enum logic [2:0] {
+    LOAD_LB  = 3'b000,
+    LOAD_LH  = 3'b001,
+    LOAD_LW  = 3'b010,
+    LOAD_LBU = 3'b100,
+    LOAD_LHU = 3'b101
+} LoadInstr_t;
+//===DMEM section (end)
 
 
 //=== DEBUG

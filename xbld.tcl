@@ -63,19 +63,21 @@ close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
 
-add_files -fileset sources_1        \
-         $rtlDir/cpu_system.sv      \
-         $rtlDir/cpu_core.sv        \
-         $rtlDir/pc.sv              \
-         $rtlDir/id.sv              \
-         $rtlDir/branch_unit_m.sv   \
-         $rtlDir/imem_sim_m.sv      \
-         $rtlDir/dmem.sv            \
-         $rtlDir/imm_gen.sv         \
-         $rtlDir/register_file.sv   \
-         $rtlDir/alu.sv             \
-         $rtlDir/shifter_alu.sv     \
-         $libDir/pf.sv              \
+add_files -fileset sources_1              \
+         $rtlDir/cpu_system.sv            \
+         $rtlDir/cpu_core.sv              \
+         $rtlDir/pc.sv                    \
+         $rtlDir/id.sv                    \
+         $rtlDir/branch_unit_m.sv         \
+         $rtlDir/imem_sim_m.sv            \
+         $rtlDir/dual_port_mem_m.sv       \
+         $rtlDir/risc_v_dmem_rd_port_m.sv \
+         $rtlDir/risc_v_dmem_wr_port_m.sv \
+         $rtlDir/imm_gen.sv               \
+         $rtlDir/register_file.sv         \
+         $rtlDir/alu.sv                   \
+         $rtlDir/shifter_alu.sv           \
+         $libDir/pf.sv                    \
          $init_def_file
 add_files -fileset constrs_1 \
          $constDir/rv_nsu_basys_3.xdc \

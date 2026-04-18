@@ -47,13 +47,11 @@ logic         imem_clk;
 Addr_t        imem_addr;
 Instr_t       instr;
 
-logic dmem_clk     ;
-logic dmem_read    ;
-logic dmem_we      ;
-Addr_t        dmem_addr;
+logic         dmem_clka;
+ByteDataEna_t dmem_byte_we;
+DmemAddr_t    dmem_addr;
 Data_t        dmem_wdata;
 Data_t        dmem_rdata;
-logic [2:0]   dmem_funct3;
 
 logic clk2;
 logic clk3;
@@ -106,27 +104,18 @@ assign asm_instr = disasm(instr);
 
 
 //---
-`define USE_PLL
-`ifdef USE_PLL
-    //(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY  *)
-    pll pll_inst
-    (
-        .clk_in    ( ref_clk    ),
-        .clk_out1  ( cpu_clk    ),
-        .clk_out2  ( clk2       ),
-        .clk_out3  ( clk3       ),
-        .locked    ( pll_locked )
-    );
+//(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY  *)
+pll pll_inst
+(
+    .clk_in    ( ref_clk    ),
+    .clk_out1  ( cpu_clk    ),
+    .clk_out2  ( clk2       ),
+    .clk_out3  ( clk3       ),
+    .locked    ( pll_locked )
+);
 
-    assign imem_clk = cpu_clk;
-    assign dmem_clk = clk2;
-`else
-    assign cpu_clk  = ref_clk;
-    assign imem_clk = cpu_clk;
-    assign dmem_clk = cpu_clk;  // TODO: так надо?
-    assign pll_locked = 1'b1;
-`endif // USE_PLL
-
+assign imem_clk = cpu_clk;
+assign dmem_clka = clk2;
 
 //--- reset (related to clk)
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
@@ -150,29 +139,32 @@ cpu_core_m cpu
     .instr         ( instr         ),
 
     //--- dmem interface
-    .dmem_addr      (dmem_addr),
-    .dmem_we        (dmem_we),
-    .dmem_funct3    (dmem_funct3),
-    .dmem_read      (dmem_read),
-    .dmem_wdata     (dmem_wdata),
-    .dmem_rdata     (dmem_rdata),
+    .dmem_addr      (dmem_addr), 
+    .dmem_byte_we   (dmem_byte_we), 
+    .dmem_data_in   (dmem_wdata), 
+    .dmem_data_out  (dmem_rdata), 
     
     //--- debug output
     .debug         ( led           )
 );
 
-//---    data memory
-dmem #(
-    .MEM_BYTES(4096),
-    .INIT_FILE(`DMEM_INIT_FILE)
-) dmem_inst (
-    .clk       (dmem_clk),
-    .mem_read  (dmem_read),
-    .mem_write (dmem_we),
-    .addr      (dmem_addr),
-    .wdata     (dmem_wdata),
-    .funct3    (dmem_funct3),
-    .rdata     (dmem_rdata)
+//--------------------- DMEM ------------------------
+dual_port_mem_m dmem_inst
+(
+    //--- port A
+    .clka (dmem_clka),
+    .ena   (1'b1),
+    .wea (dmem_byte_we),
+    .addra(dmem_addr),
+    .dina (dmem_wdata), 
+    .douta (dmem_rdata),
+    //--- port B not connected
+    .clkb  (clk),
+    .enb   (1'b0),
+    .web   (4'b0),
+    .addrb ('0),
+    .dinb  ('0),
+    .doutb ()
 );
 
 //---    instruction memory

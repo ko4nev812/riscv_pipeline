@@ -22,15 +22,12 @@ module cpu_core_m import risc_v_pkg::*;
     input  Instr_t       instr,    
     
     //--- dmem interface (TBD)
-    output Addr_t        dmem_addr,
-    output logic         dmem_we,
-    output logic [2:0]   dmem_funct3,       // TODO: мб лучше не тянуть из core, а взять прямо из system? 
-                                            // или наоборот вынести в core часть логики из dmem
-    output logic         dmem_read,         // вроде бы избыточен?
-    // output ByteDataEna_t dmem_byte_we,   // реализовано в dmem
-    output Data_t        dmem_wdata,
-    input  Data_t        dmem_rdata,
+    output DmemAddr_t    dmem_addr,
+    output ByteDataEna_t dmem_byte_we,
+    output Data_t        dmem_data_in,
+    input  Data_t        dmem_data_out,
     
+
     //--- additional status info (i.e. for exceptions)
     //output logic         illegal_instr
     output logic [15:0]  debug  
@@ -72,7 +69,15 @@ Id_instr_t id_instr;
 Id_controls_in_t id_controls_in;
 Id_controls_out_t id_output_controls;
 logic id_illegal;
-    
+
+//--- DMEM
+logic       dmem_we;
+logic [2:0] dmem_funct3;
+logic [1:0] dmem_byte_off;
+Data_t      dmem_rdata_out;
+Data_t      dmem_wdata_in;
+Addr_t      dmem_tmp_addr;
+
 `ifdef RF_DEBUG_OUT
     Data_t dbg_reg;  
 `endif
@@ -90,11 +95,12 @@ logic id_illegal;
 
 assign imem_addr = pc;
 
-assign dmem_addr   = rf_rd1 + imm;  // TODO: +imm
+assign dmem_tmp_addr   = rf_rd1 + imm;  // TODO: +imm
 assign dmem_we     = id_output_controls.dmem_we;
 assign dmem_funct3 = instr[14:12];
-assign dmem_read   = (id_output_controls.wb_sel == WB_DMEM_OUT) && !rst;
-assign dmem_wdata  = rf_rd2;
+assign dmem_byte_off = dmem_tmp_addr[1:0];
+assign dmem_wdata_in  = rf_rd2;
+assign dmem_addr = dmem_tmp_addr[DMEM_PORT_ADDR_WIDTH+1:2]; 
 
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;
@@ -109,7 +115,7 @@ always_comb begin
         WB_PC4_OUT     : rf_wd3 = pc+4;
         WB_ALU_OUT     : rf_wd3 = alu_out;
         WB_SHIFTER_OUT : rf_wd3 = shifter_out;
-        WB_DMEM_OUT    : rf_wd3 = dmem_rdata;
+        WB_DMEM_OUT    : rf_wd3 = dmem_rdata_out;
         default: rf_wd3 = 'X;
     endcase
 end
@@ -206,6 +212,29 @@ imm_gen imm_gen_inst
     .instr (instr),
     .imm_type (id_output_controls.imm_type),
     .imm (imm)
+);
+
+//--------------------- DMEM ------------------------
+risc_v_dmem_wr_port_m dmem_wr_port_inst
+(
+    // -- in
+    .dmem_we (dmem_we),
+    .funct3 (dmem_funct3),
+    .byte_addr (dmem_byte_off),
+    .data_in (dmem_wdata_in),
+    // -- out
+    .we (dmem_byte_we),
+    .data_out (dmem_data_in)
+);
+
+risc_v_dmem_rd_port_m dmem_rd_port_inst
+(
+    // -- in
+    .funct3 (dmem_funct3),
+    .byte_addr (dmem_byte_off),
+    .data_in(dmem_data_out),
+    // -- out
+    .data_out(dmem_rdata_out)
 );
 
 //--------------------- Branch unit --------------------
