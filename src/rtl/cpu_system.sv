@@ -70,11 +70,6 @@ assign asm_instr = disasm(instr);
 
 //==============================================================================
 `ifdef SYS_DEBUG_OUT
-    logic [15:0] dbg_counter;
-    always_ff @(posedge cpu_clk) begin
-        dbg_counter <= dbg_counter + 1;
-    end
-    
     logic [3:0] reg_insn_addr;
     logic [6:0] reg_insn_opcode;
     logic [2:0] reg_insn_funct3;
