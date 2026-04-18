@@ -134,10 +134,10 @@ cpu_core_m cpu
     .instr         ( instr         ),
 
     //--- dmem interface
-    .dmem_addr      (dmem_addr), 
-    .dmem_byte_we   (dmem_byte_we), 
-    .dmem_data_in   (dmem_wdata), 
-    .dmem_data_out  (dmem_rdata), 
+    .dmem_addr     ( dmem_addr     ), 
+    .dmem_byte_we  ( dmem_byte_we  ), 
+    .dmem_data_in  ( dmem_wdata    ), 
+    .dmem_data_out ( dmem_rdata    ), 
     
     //--- debug output
     .debug         ( led           )
@@ -147,19 +147,19 @@ cpu_core_m cpu
 dual_port_mem_m dmem_inst
 (
     //--- port A
-    .clka (dmem_clka),
-    .ena   (1'b1),
-    .wea (dmem_byte_we),
-    .addra(dmem_addr),
-    .dina (dmem_wdata), 
-    .douta (dmem_rdata),
+    .clka  ( dmem_clka    ),
+    .ena   ( 1'b1         ),
+    .wea   ( dmem_byte_we ),
+    .addra ( dmem_addr    ),
+    .dina  ( dmem_wdata   ), 
+    .douta ( dmem_rdata   ),
     //--- port B not connected
-    .clkb  (clk),
-    .enb   (1'b0),
-    .web   (4'b0),
-    .addrb ('0),
-    .dinb  ('0),
-    .doutb ()
+    .clkb  ( dmem_clka    ),
+    .enb   ( 1'b0         ),
+    .web   ( 4'b0         ),
+    .addrb ( '0           ),
+    .dinb  ( '0           ),
+    .doutb (              )
 );
 
 //---    instruction memory
