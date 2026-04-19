@@ -36,7 +36,7 @@ module risc_v_shifter_m
     if (sel == SHIFT_SLL) begin  // SHIFT_SLL
 
       for (int i = 0; i < $clog2(XLEN); i++) begin
-        int localOffset = 1 << i;
+        automatic int localOffset = 1 << i;
 
         // offset bits
         for (int j = localOffset; j < XLEN; j++) begin
@@ -59,7 +59,7 @@ module risc_v_shifter_m
 
       logic fill;
       for (int i = 0; i < $clog2(XLEN); i++) begin
-        int localOffset = 1 << i;
+        automatic int localOffset = 1 << i;
 
         // offset bits
         for (int j = 0; j < XLEN - localOffset; j++) begin
