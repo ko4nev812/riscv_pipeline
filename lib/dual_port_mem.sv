@@ -91,7 +91,7 @@ tdp_ram_m
                  .PORTA_MODE ( "RF"                ),
                  .PORTB_MODE ( "WF"                )
              )
-dpe_bram_inst
+tdp_bram_inst
 (
     //--- port A
     .clka     ( clka  ),
