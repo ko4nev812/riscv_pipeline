@@ -70,7 +70,6 @@ add_files -fileset sources_1              \
          $rtlDir/id.sv                    \
          $rtlDir/branch_unit_m.sv         \
          $rtlDir/imem_sim_m.sv            \
-         $rtlDir/dual_port_mem_m.sv       \
          $rtlDir/risc_v_dmem_rd_port_m.sv \
          $rtlDir/risc_v_dmem_wr_port_m.sv \
          $rtlDir/imm_gen.sv               \
@@ -78,6 +77,7 @@ add_files -fileset sources_1              \
          $rtlDir/alu.sv                   \
          $rtlDir/shifter_alu.sv           \
          $libDir/pf.sv                    \
+         $libDir/dual_port_mem.sv         \
          $init_def_file
 add_files -fileset constrs_1 \
          $constDir/rv_nsu_basys_3.xdc \

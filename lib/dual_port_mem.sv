@@ -4,7 +4,9 @@
 //  modules:       dual_port_mem_m
 //                 tdp_ram_m (when DUAL_PORT_BRAM_MEM_IP undefined) 
 //
-//  description:   
+//  description:   True dual-port block RAM with per-byte write enables.
+//                 Supports read-first (RF) and write-first (WF) modes
+//                 independently for each port.
 //
 //------------------------------------------------------------------------------
 
@@ -248,4 +250,3 @@ endgenerate
 endmodule : tdp_ram_m
 
 `endif // DUAL_PORT_BRAM_MEM_IP
-
