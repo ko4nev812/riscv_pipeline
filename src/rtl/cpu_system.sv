@@ -143,8 +143,28 @@ cpu_core_m cpu
     .debug         ( led           )
 );
 
-//--------------------- DMEM ------------------------
+//--------------------- instruction memory (IMEM) ------------------------
+(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
+imem_sim_m 
+        #(
+            .INIT_FILE  (`IMEM_INIT_FILE),
+            .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
+        )
+imem        
+(
+    .addr  ( imem_addr[0 +: IMEM_ADDR_WIDTH] ), // in old implementation 'imem_addr[2 +: IMEM_ADDR_WIDTH]'
+    .instr ( instr )
+);
+
+//--------------------- data memory (DMEM) ------------------------
+(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 dual_port_mem_m dmem_inst
+        #(
+            .INIT_FILE        (`DMEM_INIT_FILE),
+            .PORTA_ADDR_WIDTH ( DMEM_PORT_ADDR_WIDTH ),
+            .PORTB_ADDR_WIDTH ( DMEM_PORT_ADDR_WIDTH )
+        )
+dmem_inst        
 (
     //--- port A
     .clka  ( dmem_clka    ),
@@ -160,19 +180,6 @@ dual_port_mem_m dmem_inst
     .addrb ( '0           ),
     .dinb  ( '0           ),
     .doutb (              )
-);
-
-//---    instruction memory
-(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-imem_sim_m 
-        #(
-            .INIT_FILE  (`IMEM_INIT_FILE),
-            .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
-        )
-imem        
-(
-    .addr  ( imem_addr[0 +: IMEM_ADDR_WIDTH] ), // in old implementation 'imem_addr[2 +: IMEM_ADDR_WIDTH]'
-    .instr ( instr )
 );
 
 endmodule : cpu_system
