@@ -33,13 +33,14 @@ file delete -force $cfgDir
 file mkdir $cfgDir
 create_project $prjName $cfgDir -part $prjFPGA
 
-set init_def_file [file join $cfgDir imem_init_path.svh]
+set init_def_file [file join $cfgDir mem_init_path.svh]
 set prgDir [file join $prjDir prg]
 
 set fh [open $init_def_file w]
-puts $fh "\`ifndef IMEM_INIT_PATH_SVH"
-puts $fh "\`define IMEM_INIT_PATH_SVH"
+puts $fh "\`ifndef MEM_INIT_PATH_SVH"
+puts $fh "\`define MEM_INIT_PATH_SVH"
 puts $fh ""
+puts $fh "//==== IMEM part"
 puts $fh "// Available IMEM images - uncomment ONE to use:"
 
 # Find all .mem files in prg directory and write commented defines
@@ -49,7 +50,7 @@ foreach memFile [glob -nocomplain [file join $prgDir *.mem]] {
     puts $fh "//\`define IMEM_INIT_FILE \"$memPathNormalized\""
 }
 
-# Default IMEM image if none selected above
+# Default IMEM and DMEM images if none selected above
 puts $fh ""
 puts $fh "// Default IMEM image (used if IMEM_INIT_FILE is not defined above)"
 puts $fh "\`ifndef IMEM_INIT_FILE"
@@ -57,8 +58,10 @@ puts $fh "\`define IMEM_INIT_FILE \"[file normalize [file join $prgDir default.m
 puts $fh "\`endif  // IMEM_INIT_FILE"
 
 puts $fh ""
+puts $fh "//==== DMEM part"
 puts $fh "\`define DMEM_INIT_FILE \"\""
-puts $fh "\`endif  // IMEM_INIT_PATH_SVH"
+puts $fh ""
+puts $fh "\`endif  // MEM_INIT_PATH_SVH"
 close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
