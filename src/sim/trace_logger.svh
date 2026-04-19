@@ -14,6 +14,7 @@
 //******************************************************************************
 
 `define IMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.imem.mem
+`define DMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.dmem_inst.tdp_bram_inst.ram
 `define RF_OBJ_NAME   $root.rv_nsu_tb.cpu_system_duv.cpu.rf_inst.regFile
 `define RF_DBG_NUM    31
 
@@ -64,6 +65,7 @@ class TraceLogger;
 
     //--------------------------------------------------------------------------
     function void load_imem(input string fname);
+        `IMEM_OBJ_NAME = '{ default: '0 };
         $readmemh(fname, `IMEM_OBJ_NAME, 0);
     endfunction : load_imem
 
@@ -71,6 +73,11 @@ class TraceLogger;
     function void init_RF();
         `RF_OBJ_NAME = '{ default: '0 };
     endfunction : init_RF
+
+    //--------------------------------------------------------------------------
+    function void zero_DMEM();
+        `DMEM_OBJ_NAME = '{ default: '0 };
+    endfunction : zero_DMEM
 
     //--------------------------------------------------------------------------
     function int get_reg(input int reg_idx);
@@ -157,6 +164,7 @@ class TraceLogger;
                 repeat (2) @(posedge cpu_vif.clk);
                 load_imem(test_file_full_name);
                 init_RF();
+                zero_DMEM();
                 repeat (8) @(posedge cpu_vif.clk);
                 cpu_vif.rst_strobe = 1'b0;
                 instr_cnt = 0;    
