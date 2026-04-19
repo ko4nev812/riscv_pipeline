@@ -141,6 +141,12 @@ class TraceLogger;
         Test_Result_t test_res;
         integer fd_res;
         int i;
+        int pass_test_num;
+        int failed_test_num;
+        int time_expired_test_num;
+
+        failed_test_num = 0;
+        time_expired_test_num = 0;
 
         //---
         $display("=== TraceLogger run() start");
@@ -184,6 +190,7 @@ class TraceLogger;
                         if(instr_cnt >= max_instr_num) begin
                             if(standalone_test) begin
                                 $display("--- test: %4d (%s) FAIL, max_instr_num reached\n", test_idx+1, cpu_vif.test_name);
+                                time_expired_test_num++;
                             end else begin
                                 $display("--- test: %4d (%s) finished, max_instr_num reached\n", test_idx+1, cpu_vif.test_name);
                             end    
@@ -197,8 +204,10 @@ class TraceLogger;
                             if(test_res != TEST_RUN) begin
                                 if(test_res == TEST_PASS) begin
                                     $display("--- test: %4d (%s) PASS\n", test_idx+1, cpu_vif.test_name);
+                                    pass_test_num++;
                                 end else begin
                                     $display("--- test: %4d (%s) FAIL, error_code: %02d\n", test_idx+1, cpu_vif.test_name, test_res);
+                                    failed_test_num++;
                                 end       
                                 break;
                             end
@@ -213,6 +222,14 @@ class TraceLogger;
         cpu_vif.test_name = "finish";
         repeat (20) @(posedge cpu_vif.clk);
         $display("=== TraceLogger run() end");
+        $display("");
+        $display("--- Test num:            %4d", test_array.size());
+        if(standalone_test) begin
+            $display(" Test passed:            %4d", pass_test_num);
+            $display(" Test failed:            %4d", failed_test_num);
+            $display(" Test with time expired: %4d", time_expired_test_num);
+        end
+        $display("");
     endtask : run
 
 endclass : TraceLogger
