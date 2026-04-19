@@ -158,7 +158,7 @@ imem
 
 //--------------------- data memory (DMEM) ------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-dual_port_mem_m dmem_inst
+dual_port_mem_m
         #(
             .INIT_FILE        (`DMEM_INIT_FILE),
             .PORTA_ADDR_WIDTH ( DMEM_PORT_ADDR_WIDTH ),
