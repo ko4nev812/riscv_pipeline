@@ -48,7 +48,7 @@ package risc_v_pkg;
 //--------------------------------------------------------------------------
 localparam int XLEN = 32;                            // RISC-V ISA dependent
 
-localparam int IMEM_ADDR_BYTE_WIDTH = 8;             // (byte addressed) CPU system implementation dependent
+localparam int IMEM_ADDR_BYTE_WIDTH = 10;            // (byte addressed) CPU system implementation dependent
 localparam int DMEM_ADDR_BYTE_WIDTH = 12;            // (byte addressed) CPU system implementation dependent, 2^12 = 4KB - it's 1 BRAM block (TODO: check it)
 
 localparam int INSTR_LEN       = 32;                 // fixed for all RISC-V ISA except RVC
