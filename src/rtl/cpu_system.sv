@@ -145,12 +145,12 @@ cpu_core_m cpu
 
 //--------------------- instruction memory (IMEM) ------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-imem_sim_m 
+imem_lutram 
         #(
             .INIT_FILE  (`IMEM_INIT_FILE),
             .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
         )
-imem        
+imem_inst        
 (
     .addr  ( imem_addr[0 +: IMEM_ADDR_WIDTH] ), // in old implementation 'imem_addr[2 +: IMEM_ADDR_WIDTH]'
     .instr ( instr )

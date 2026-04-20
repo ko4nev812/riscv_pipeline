@@ -72,7 +72,7 @@ add_files -fileset sources_1              \
          $rtlDir/pc.sv                    \
          $rtlDir/id.sv                    \
          $rtlDir/branch_unit_m.sv         \
-         $rtlDir/imem_sim_m.sv            \
+         $rtlDir/imem.sv                  \
          $rtlDir/risc_v_dmem_rd_port_m.sv \
          $rtlDir/risc_v_dmem_wr_port_m.sv \
          $rtlDir/imm_gen.sv               \
