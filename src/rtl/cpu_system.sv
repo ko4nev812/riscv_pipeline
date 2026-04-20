@@ -152,7 +152,7 @@ imem_lutram
         )
 imem_inst        
 (
-    .addr  ( imem_addr[2 +: IMEM_ADDR_BYTE_WIDTH] ),
+    .addr  ( imem_addr[2 +: (IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH)] ),
     .instr ( instr )
 );
 
