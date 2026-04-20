@@ -147,12 +147,12 @@ cpu_core_m cpu
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 imem_lutram 
         #(
-            .INIT_FILE  (`IMEM_INIT_FILE),
-            .ADDR_WIDTH ( IMEM_ADDR_WIDTH )
+            .INIT_FILE  (`IMEM_INIT_FILE                         ),
+            .ADDR_WIDTH ( IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH )
         )
 imem_inst        
 (
-    .addr  ( imem_addr[0 +: IMEM_ADDR_WIDTH] ), // in old implementation 'imem_addr[2 +: IMEM_ADDR_WIDTH]'
+    .addr  ( imem_addr[2 +: IMEM_ADDR_BYTE_WIDTH] ),
     .instr ( instr )
 );
 
