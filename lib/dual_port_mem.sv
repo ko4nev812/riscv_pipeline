@@ -74,10 +74,10 @@ tdp_bram_ip tdp_bram_inst
 //------------------------------------------------------------------------------
 initial begin
     if(PORTA_ADDR_WIDTH != PORTB_ADDR_WIDTH) begin
-        $fatal("[E] %M bad parameters (1)\n");
+        $fatal(2, "[E] In module (%m) - bad parameters (case 1)\n");
     end
     if(PORTA_DATA_BYTE_NUM != PORTB_DATA_BYTE_NUM) begin
-        $fatal("[E] %M bad parameters (2)\n");
+        $fatal(2, "[E] In module (%m) - bad parameters (case 2)\n");
     end
 end
 
