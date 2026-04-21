@@ -3,11 +3,8 @@
 // `define XLEN 32
 
 module register_file #(
-    parameter XLEN = 32,
-    parameter REG_CNT = 32,
-    `ifdef RF_DEBUG_OUT
-      parameter int DBG_REG_NUM = 3,
-    `endif
+    parameter  XLEN = 32,
+    parameter  REG_CNT = 32,
     localparam REG_BUS = ($clog2(REG_CNT))
 ) (
     input logic clk,
@@ -22,11 +19,6 @@ module register_file #(
     input logic [XLEN-1:0] rd,
 
     input logic we
-
-    `ifdef RF_DEBUG_OUT
-      ,
-      output logic [XLEN-1:0] dbg_reg  
-    `endif
 );
 
   timeunit      1ns;
@@ -47,10 +39,6 @@ module register_file #(
     rs1 = regFile[rsi1];
     rs2 = regFile[rsi2];
   end
-
-  `ifdef RF_DEBUG_OUT
-    assign dbg_reg = regFile[DBG_REG_NUM];
-  `endif
 
   always_ff @(posedge clk) begin : save_rd
     if (we && rdi != 0) begin

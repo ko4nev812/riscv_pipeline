@@ -25,12 +25,10 @@ module cpu_core_m import risc_v_pkg::*;
     output Addr_t        dmem_addr,
     output ByteDataEna_t dmem_byte_we,
     output Data_t        dmem_data_in,
-    input  Data_t        dmem_data_out,
-    
+    input  Data_t        dmem_data_out
 
     //--- additional status info (i.e. for exceptions)
     //output logic         illegal_instr
-    output logic [15:0]  debug  
 );
 
 //timeunit      1ns;
@@ -78,21 +76,7 @@ Data_t      dmem_rdata_out;
 Data_t      dmem_wdata_in;
 Addr_t      dmem_tmp_addr;
 
-`ifdef RF_DEBUG_OUT
-    Data_t dbg_reg;  
-`endif
-
 //==============================================================================
-
-//--------------------------------------------------------------------------
-`ifdef RF_DEBUG_OUT
-    assign debug = dbg_reg[31:16];  
-`else
-    assign debug[15:1] = alu_out[14:0];
-    assign debug[0] = ^alu_out;
-`endif
-
-
 assign imem_addr = pc;
 
 assign dmem_tmp_addr   = rf_rd1 + imm;  // TODO: +imm
@@ -173,10 +157,6 @@ rf_inst
     .rd   ( rf_wd3 ),
 
     .we   ( rf_we3 )
-    `ifdef RF_DEBUG_OUT
-      ,
-      .dbg_reg (dbg_reg) 
-    `endif
 );
 
 //--------------------- ALU -----------------------------------------------------

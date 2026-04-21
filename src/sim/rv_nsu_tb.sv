@@ -84,15 +84,6 @@ cpu_system cpu_system_duv
     `ifdef CFG_NAME_BASYS_3
         .led ()
     `endif
-    //--------------------------------------------------------------------------
-    `ifdef SYS_DEBUG_OUT
-        ,
-        .dbg_insn_addr   (),
-        .dbg_insn_opcode (),
-        .dbg_insn_funct3 (),
-        .dbg_clk_vec     (),
-        .dbg_pll_locked  ()
-    `endif
 );
 
 endmodule : rv_nsu_tb

@@ -22,16 +22,6 @@ module cpu_system import risc_v_pkg::*;
     `ifdef CFG_NAME_BASYS_3
         output logic [`LED_NUM-1:0]  led
     `endif
-
-    //--------------------------------------------------------------------------
-    `ifdef SYS_DEBUG_OUT
-        ,
-        output logic [3:0] dbg_insn_addr,
-        output logic [6:0] dbg_insn_opcode,
-        output logic [2:0] dbg_insn_funct3,
-        output logic [2:0] dbg_clk_vec,
-        output logic       dbg_pll_locked
-    `endif
 );
 
 //timeunit      1ns;
@@ -69,31 +59,7 @@ assign asm_instr = disasm(instr);
 
 
 //==============================================================================
-`ifdef SYS_DEBUG_OUT
-    logic [3:0] reg_insn_addr;
-    logic [6:0] reg_insn_opcode;
-    logic [2:0] reg_insn_funct3;
-
-    always_ff @(posedge cpu_clk) begin
-        reg_insn_addr <= imem_addr[5:2];
-        //dbg_insn_addr <= reg_insn_addr;
-    end    
-    always_ff @(posedge cpu_clk) begin
-        reg_insn_opcode <= instr[6:0];
-        //dbg_insn_opcode <= reg_insn_opcode;
-    end    
-    always_ff @(posedge cpu_clk) begin
-        reg_insn_funct3 <= instr[14:12];
-        //dbg_insn_funct3 <= reg_insn_funct3;
-    end    
-
-    assign dbg_insn_addr = reg_insn_addr;
-    assign dbg_insn_opcode = reg_insn_opcode;
-    assign dbg_insn_funct3 = reg_insn_funct3;
-
-    assign dbg_clk_vec    = { clk3, clk2, cpu_clk };
-    assign dbg_pll_locked = pll_locked;
-`endif
+assign led = '1; // TODO: make port
 
 //==============================================================================
 
@@ -137,10 +103,7 @@ cpu_core_m cpu
     .dmem_addr     ( dmem_addr     ), 
     .dmem_byte_we  ( dmem_byte_we  ), 
     .dmem_data_in  ( dmem_wdata    ), 
-    .dmem_data_out ( dmem_rdata    ), 
-    
-    //--- debug output
-    .debug         ( led           )
+    .dmem_data_out ( dmem_rdata    ) 
 );
 
 //--------------------- instruction memory (IMEM) ------------------------

@@ -224,9 +224,6 @@ typedef enum logic [2:0] {
 
 //=== DEBUG
 
-`define SYS_DEBUG_OUT
-//`define RF_DEBUG_OUT
-
 `ifdef SIMULATOR
 localparam int NN = 30;
 typedef logic [0:NN*8-1] str_t;
