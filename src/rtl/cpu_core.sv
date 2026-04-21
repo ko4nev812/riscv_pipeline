@@ -21,8 +21,8 @@ module cpu_core_m import risc_v_pkg::*;
     output Addr_t        imem_addr,
     input  Instr_t       instr,    
     
-    //--- dmem interface (TBD)
-    output DmemAddr_t    dmem_addr,
+    //--- dmem interface 
+    output Addr_t        dmem_addr,
     output ByteDataEna_t dmem_byte_we,
     output Data_t        dmem_data_in,
     input  Data_t        dmem_data_out,

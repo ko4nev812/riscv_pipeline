@@ -49,7 +49,7 @@ Instr_t       instr;
 
 logic         dmem_clka;
 ByteDataEna_t dmem_byte_we;
-DmemAddr_t    dmem_addr;
+Addr_t        dmem_addr;
 Data_t        dmem_wdata;
 Data_t        dmem_rdata;
 
@@ -170,7 +170,7 @@ dmem_inst
     .clka  ( dmem_clka    ),
     .ena   ( 1'b1         ),
     .wea   ( dmem_byte_we ),
-    .addra ( dmem_addr    ),
+    .addra ( dmem_addr[0 +: DMEM_PORT_ADDR_WIDTH]    ),
     .dina  ( dmem_wdata   ), 
     .douta ( dmem_rdata   ),
     //--- port B not connected

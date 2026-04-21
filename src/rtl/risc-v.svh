@@ -68,7 +68,6 @@ typedef logic [BYTE_ADDR_WIDTH-1:0]      ByteAddr_t;
 typedef logic [INSTR_LEN-1:0]            Instr_t;
 typedef Byte_t                           ByteData_t [DATA_BYTE_NUM];
 typedef Data_t                           Addr_t;
-typedef logic [DMEM_PORT_ADDR_WIDTH-1:0] DmemAddr_t;
 
 // (reserved) typedef logic [$clog2(XLEN)-1:0]        Shamt_t;        // shift amount
 
