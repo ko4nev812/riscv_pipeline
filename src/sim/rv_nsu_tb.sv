@@ -10,7 +10,7 @@
 `include "trace_logger.svh"
 `include "risc-v.svh"
 
-//`define TRACE_LOGGER_ENA
+`define TRACE_LOGGER_ENA
 
 
 //******************************************************************************
