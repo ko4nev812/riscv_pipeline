@@ -57,12 +57,7 @@ str_t asm_instr;
 assign asm_instr = disasm(instr);
 `endif
 
-
 //==============================================================================
-assign led = '1; // TODO: make port
-
-//==============================================================================
-
 
 //---
 //(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY  *)
@@ -106,7 +101,7 @@ cpu_core_m cpu
     .dmem_data_out ( dmem_rdata    ) 
 );
 
-//--------------------- instruction memory (IMEM) ------------------------
+//--------------------- instruction memory (IMEM) -------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 imem_lutram 
         #(
@@ -119,7 +114,7 @@ imem_inst
     .instr ( instr )
 );
 
-//--------------------- data memory (DMEM) ------------------------
+//--------------------- data memory (DMEM) --------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 dual_port_mem_m
         #(
@@ -133,7 +128,7 @@ dmem_inst
     .clka  ( dmem_clka    ),
     .ena   ( 1'b1         ),
     .wea   ( dmem_byte_we ),
-    .addra ( dmem_addr[0 +: DMEM_PORT_ADDR_WIDTH]    ),
+    .addra ( dmem_addr[2 +: DMEM_PORT_ADDR_WIDTH] ),
     .dina  ( dmem_wdata   ), 
     .douta ( dmem_rdata   ),
     //--- port B not connected
@@ -144,6 +139,21 @@ dmem_inst
     .dinb  ( '0           ),
     .doutb (              )
 );
+
+//--------------------- simplest port -------------------------------------
+localparam logic [DMEM_PORT_ADDR_WIDTH:0] LED_PORT_ADDR = {1'b1, {DMEM_PORT_ADDR_WIDTH{1'b0}}}; // 1 - high bit and DMEM_PORT_ADDR_WIDTH zeros
+
+always_ff @(posedge cpu_clk) begin
+    if(cpu_rst) begin
+        led <= '0;
+    end else begin
+        if(dmem_byte_we == 4'b1111) begin
+            if(dmem_addr[2 +: (DMEM_PORT_ADDR_WIDTH + 1)] == LED_PORT_ADDR) begin
+                led <= dmem_wdata[`LED_NUM-1:0];
+            end
+        end
+    end
+end
 
 endmodule : cpu_system
 

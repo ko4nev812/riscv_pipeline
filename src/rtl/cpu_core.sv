@@ -74,17 +74,15 @@ logic [2:0] dmem_funct3;
 logic [1:0] dmem_byte_off;
 Data_t      dmem_rdata_out;
 Data_t      dmem_wdata_in;
-Addr_t      dmem_tmp_addr;
 
 //==============================================================================
 assign imem_addr = pc;
 
-assign dmem_tmp_addr   = rf_rd1 + imm;  // TODO: +imm
+assign dmem_addr   = rf_rd1 + imm;  // TODO: +imm
 assign dmem_we     = id_output_controls.dmem_we;
 assign dmem_funct3 = instr[14:12];
-assign dmem_byte_off = dmem_tmp_addr[1:0];
+assign dmem_byte_off = dmem_addr[1:0];
 assign dmem_wdata_in  = rf_rd2;
-assign dmem_addr = dmem_tmp_addr[DMEM_PORT_ADDR_WIDTH+1:2]; 
 
 assign alu_in_a = id_output_controls.a_sel? rf_rd1 : pc;
 assign alu_in_b = id_output_controls.b_sel? rf_rd2 : imm;

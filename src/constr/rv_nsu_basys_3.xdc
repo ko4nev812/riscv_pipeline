@@ -46,7 +46,7 @@ set_property PACKAGE_PIN P1    [get_ports {led[14]}]
 set_property PACKAGE_PIN L1    [get_ports {led[15]}]
 
 set_property IOSTANDARD LVCMOS33 [get_ports {led}]
-#set_property IOB TRUE [get_ports {led}]
+set_property IOB TRUE [get_ports {led}]
 
 #-------------------------------------------------------------------------------
 #    Pmod Header JA
