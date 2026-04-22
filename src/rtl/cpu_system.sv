@@ -71,7 +71,7 @@ pll pll_inst
 );
 
 assign imem_clk = cpu_clk;
-assign dmem_clka = clk2;
+assign dmem_clka = clk3;
 
 //--- reset (related to clk)
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
