@@ -22,6 +22,19 @@ class Sha3_256;
     /** Rounds number for Keccak*/
     localparam int NUM_ROUNDS   = 24;
 
+    /**
+     * SHA-3 domain separation suffix (FIPS 202, Section 6.1).
+     * Distinguishes SHA-3 from SHAKE and raw Keccak.
+     */
+    localparam byte SHA3_DOMAIN_SUFFIX = 0x06;
+
+    /**
+     * High bit set in the final padding byte, completing the pad10*1 pattern.
+     * Combined with SHA3_DOMAIN_SUFFIX when exactly one byte of padding is available:
+     * 0x06 | 0x80 = 0x86.
+     */
+    localparam byte PADDING_END_BIT = 0x80;
+
     /** 24 round constants for Keccak-f[1600]. */
     localparam longint unsigned RC[24] = '{
         64'h0000000000000001, 64'h0000000000008082, 64'h800000000000808A,
@@ -145,6 +158,59 @@ class Sha3_256;
                 state[x + 5 * y] ^= lane;
             end
         end
+    endtask
+
+    /** 
+    * Applies SHA-3 domain separation and multi-rate padding (pad10*1) to the final partial 
+    * block, absorbs it into the state, and runs the permutation. 
+    * 
+    * Uses the pre-allocated {@link #paddingBlock} field instead of allocating a new array. 
+    * The buffer is always fully overwritten here, so no stale bytes can leak between calls. 
+    * 
+    * The SHA-3 domain suffix is 0x06 (FIPS 202, Section 6.1). Combined with pad10*1: 
+    * If exactly one byte of padding fits: append 0x86 (0x06 | 0x80) 
+    * Otherwise: append 0x06, then zero bytes, then 0x80 in the last position 
+    * 
+    * @param blk source buffer; bytes [0, filled) contain the message tail 
+    * @param filled number of message bytes in the buffer, in range [0, RATE_BYTES) 
+    */
+    local task automatic absorb_final(input byte unsigned blk[], input int filled);
+        int y;
+        int q;
+        localparam byte unsigned pad_blk[RATE_BYTES];
+        assert (filled >= 0 && filled < RATE_BYTES) else $fatal(1, "absorb_final: invalid filled=%0d", filled)
+
+        /** 
+        * Copy the message tail into the reusable padding blk.
+        */
+        for (y = 0; y < filled; y++) begin
+            blk[y] = pad_blk[y];
+        end
+
+        /** 
+        * Zero out the remainder so no stale bytes survive from a previous call.
+        */
+        for (y = filled; y < RATE_BYTES; y++) begin
+            pad_blk[y] = 8'h00;
+        end
+
+        q = RATE_BYTES - filled; /** always >= 1 */
+
+        if (q == 1) begin
+            /** 
+            * Only one byte of space: domain suffix and end-bit are combined.
+            */
+            pad_blk[filled] = byte'(SHA3_DOMAIN_SUFFIX | PADDING_END_BIT); /** 0x86 */
+        end else begin
+            pad_blk[filled]         = SHA3_DOMAIN_SUFFIX; /** 0x06 */
+            pad_blk[RATE_BYTES - 1] = PADDING_END_BIT;   /** 0x80 */
+        end
+
+        /** 
+        * Absorb the full padding block — length == RATE_BYTES is intentional.
+        */
+        xor_block(pad_blk, RATE_BYTES);
+        keccakf();
     endtask
 
 
