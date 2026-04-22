@@ -121,5 +121,33 @@ class Sha3_256;
 
     endtask
 
+    /** 
+    * XORs a slice of the given byte array into the state using little-endian packing 
+    * within each 64-bit lane. 
+    */
+    local task automatic xor_block(input byte unsigned blk[], input int len);
+        int pos;
+        int x;
+        int y; 
+        int b; 
+        int end_b;
+        longint unsigned lane;
+        assert (len >= 0 && len <= RATE_BYTES) else $fatal(1, "xor_block: invalid len=%0d", len);
+        pos = 0;
+        outer_loop:
+            for (y = 0, y < 5; y++) begin
+                for (x = 0; x < 5; x++) begin
+                    if (pos >= len) break outer_loop;
+                    lane = 0;
+                    end_b = ((8 < len - pos) ? 8 : len - pos);
+                    for (b = 0; b < end_b; b++) begin
+                        lane |= longint unsigned'(blk[pos]) << (8 * b);
+                    end
+                    state[x + 5 * y] ^= lane;
+                end
+            end
+    endtask
+
+
 endclass : Sha3_256
 `endif // SHA3_256_SVH
