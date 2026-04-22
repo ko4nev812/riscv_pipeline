@@ -177,14 +177,14 @@ class Sha3_256;
     local task automatic absorb_final(input byte unsigned blk[], input int filled);
         int y;
         int q;
-        localparam byte unsigned pad_blk[RATE_BYTES];
-        assert (filled >= 0 && filled < RATE_BYTES) else $fatal(1, "absorb_final: invalid filled=%0d", filled)
+        byte unsigned pad_blk[RATE_BYTES];
+        assert (filled >= 0 && filled < RATE_BYTES) else $fatal(1, "absorb_final: invalid filled=%0d", filled);
 
         /** 
         * Copy the message tail into the reusable padding blk.
         */
         for (y = 0; y < filled; y++) begin
-            blk[y] = pad_blk[y];
+            pad_blk[y] = blk[y];
         end
 
         /** 
@@ -210,7 +210,7 @@ class Sha3_256;
         * Absorb the full padding block — length == RATE_BYTES is intentional.
         */
         xor_block(pad_blk, RATE_BYTES);
-        keccakf();
+        keccak_f();
     endtask
 
 
