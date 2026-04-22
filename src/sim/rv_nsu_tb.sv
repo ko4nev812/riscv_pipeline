@@ -7,6 +7,7 @@
 //------------------------------------------------------------------------------
 
 `include "tb.svh"
+`include "sha3_256.svh"
 `include "trace_logger.svh"
 `include "risc-v.svh"
 
