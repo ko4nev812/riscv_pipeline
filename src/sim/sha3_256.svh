@@ -138,14 +138,15 @@ class Sha3_256;
     * XORs a slice of the given byte array into the state using little-endian packing 
     * within each 64-bit lane. 
     */
-    local task automatic xor_block(input byte unsigned blk[], input int len);
+    local task automatic xor_block(input byte unsigned blk[], input int offset, input int len);
         int pos;
         int x;
         int y; 
         int b; 
         int end_b;
         longint unsigned lane;
-        assert (len >= 0 && len <= RATE_BYTES) else $fatal(1, "xor_block: invalid len=%0d", len);
+        assert (offset >= 0 && len >= 0 && len <= RATE_BYTES && offset + len <= blk.size())
+            else $fatal(1, "xor_block: invalid args offset=%0d len=%0d", offset, len);
         pos = 0;
         for (y = 0; y < 5; y++) begin : outer_loop
             for (x = 0; x < 5; x++) begin
@@ -153,7 +154,7 @@ class Sha3_256;
                 lane = 0;
                 end_b = ((8 < len - pos) ? 8 : len - pos);
                 for (b = 0; b < end_b; b++) begin
-                    lane |= longint unsigned'(blk[pos++]) << (8 * b);
+                    lane |= longint unsigned'(blk[offset + pos++]) << (8 * b);
                 end
                 state[x + 5 * y] ^= lane;
             end
@@ -209,7 +210,7 @@ class Sha3_256;
         /** 
         * Absorb the full padding block — length == RATE_BYTES is intentional.
         */
-        xor_block(pad_blk, RATE_BYTES);
+        xor_block(pad_blk, 0, RATE_BYTES);
         keccak_f();
     endtask
 
@@ -223,17 +224,16 @@ class Sha3_256;
         int y; 
         int b;
         int end_b;
-        byte unsigned val;
-        longint unsigned lane
+        longint unsigned lane;
         pos = 0;
 
         for (y = 0; y < 5; y++) begin : outer_loop
             for (int x = 0; x < 5; x++) begin
                 if (pos >= DIGEST_BYTES) disable outer_loop;
                 lane = state[x + 5 * y];
-                end_b = ((8 < len - pos) ? 8 : DIGEST_BYTES - pos);
+                end_b = ((8 < DIGEST_BYTES - pos) ? 8 : DIGEST_BYTES - pos);
                 for (b = 0; b < end_b; b++) begin
-                    out[pos++] = byte'(lane >>> (8 * b));
+                    out[pos++] = byte'(lane >> (8 * b));
                 end
             end
         end
@@ -242,13 +242,49 @@ class Sha3_256;
     endfunction
 
     /**
-     * Converts bytes to lowercase hexadecimal using HexFormat (Java 17+).
+     * Converts bytes to lowercase hexadecimal using HexFormat.
      */
     local function automatic string to_hex(input byte unsigned data[]);
         string result = "";
         foreach (data[i])
             result = {result, $sformatf("%02h", data[i])};
         return result;
+    endfunction
+
+    /**
+     * Resets the internal state to zero.
+     */
+    local task automatic reset();
+        foreach (state[i]) state[i] = 0;
+    endtask
+
+    /**
+     * Computes SHA3-256 of the provided byte array.
+     *
+     * This overload operates entirely in memory and therefore does not throw IOException.
+     */
+    function automatic string digest_bytes(input byte unsigned data[]);
+        int offset;
+        byte unsigned last_blk[RATE_BYTES];
+        int remaining;
+        int y;
+        offset = 0;
+        reset();
+        while (offset + RATE_BYTES <= data.size()) begin
+            xor_block(data, offset, RATE_BYTES);
+            keccak_f();
+            offset += RATE_BYTES;
+        end
+
+        remaining = data.size() - offset;
+        if (remaining > 0) begin
+            for (y = 0; y < remaining; y++) begin
+                last_blk[y] = data[offset + y];
+            end
+        end
+
+        absorb_final(last_blk, remaining);
+        return to_hex(squeeze());
     endfunction
 
 
