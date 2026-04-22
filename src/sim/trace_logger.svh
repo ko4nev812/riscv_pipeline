@@ -13,7 +13,11 @@
 //******************************************************************************
 //******************************************************************************
 
-`define IMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.imem_inst.mem
+`ifndef IMEM_BRAM
+    `define IMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.imem_inst.mem
+`else    
+    `define IMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.imem_inst.imem_inst.tdp_bram_inst.ram
+`endif    
 `define DMEM_OBJ_NAME $root.rv_nsu_tb.cpu_system_duv.dmem_inst.tdp_bram_inst.ram
 `define RF_OBJ_NAME   $root.rv_nsu_tb.cpu_system_duv.cpu.rf_inst.regFile
 `define RF_DBG_NUM    31
