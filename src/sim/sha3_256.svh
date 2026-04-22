@@ -287,6 +287,28 @@ class Sha3_256;
         return to_hex(squeeze());
     endfunction
 
+    function automatic string digest_file(input string path);
+        integer fd;
+        byte unsigned blk[RATE_BYTES];
+        byte unsigned b;
+        int filled;
+        filled = 0;
+        fd = $fopen(path, "rb");
+        if (fd == 0) $fatal(1, "digest_file: cannot open '%s'", path);
+        reset();
+        while ($fread(b, fd) == 1) begin
+            blk[filled++] = b;
+            if (filled == RATE_BYTES) begin
+                xor_block(blk, 0, RATE_BYTES);
+                keccak_f();
+                filled = 0;
+            end
+        end
+        $fclose(fd);
+        absorb_final(blk, filled);
+        return to_hex(squeeze()); 
+    endfunction
+
 
 endclass : Sha3_256
 `endif // SHA3_256_SVH
