@@ -216,7 +216,7 @@ class Sha3_256;
     /**
      * Extracts the first DIGEST_BYTES bytes from the state in little-endian lane order.
      */
-    local function byte unsigned squeeze();
+    local function automatic byte unsigned[] squeeze();
         byte unsigned out[] = new[DIGEST_BYTES];
         int pos;
         int x;
@@ -224,14 +224,14 @@ class Sha3_256;
         int b;
         int end_b;
         byte unsigned val;
-        int pos = 0;
+        longint unsigned lane
+        pos = 0;
 
-        outer_loop:
         for (y = 0; y < 5; y++) begin : outer_loop
             for (int x = 0; x < 5; x++) begin
-                if (pos >= DIGEST_BYTES) discard outer_loop;
+                if (pos >= DIGEST_BYTES) disable outer_loop;
                 lane = state[x + 5 * y];
-                int end_b = ((8 < len - pos) ? 8 : len - pos);
+                end_b = ((8 < len - pos) ? 8 : DIGEST_BYTES - pos);
                 for (b = 0; b < end_b; b++) begin
                     out[pos++] = byte'(lane >>> (8 * b));
                 end
@@ -244,7 +244,7 @@ class Sha3_256;
     /**
      * Converts bytes to lowercase hexadecimal using HexFormat (Java 17+).
      */
-    local function automatic string to_hex(input byte unsigned data[]) {
+    local function automatic string to_hex(input byte unsigned data[]);
         string result = "";
         foreach (data[i])
             result = {result, $sformatf("%02h", data[i])};
