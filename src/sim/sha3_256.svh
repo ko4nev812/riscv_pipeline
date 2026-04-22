@@ -134,18 +134,17 @@ class Sha3_256;
         longint unsigned lane;
         assert (len >= 0 && len <= RATE_BYTES) else $fatal(1, "xor_block: invalid len=%0d", len);
         pos = 0;
-        outer_loop:
-            for (y = 0, y < 5; y++) begin
-                for (x = 0; x < 5; x++) begin
-                    if (pos >= len) break outer_loop;
-                    lane = 0;
-                    end_b = ((8 < len - pos) ? 8 : len - pos);
-                    for (b = 0; b < end_b; b++) begin
-                        lane |= longint unsigned'(blk[pos]) << (8 * b);
-                    end
-                    state[x + 5 * y] ^= lane;
+        for (y = 0; y < 5; y++) begin : outer_loop
+            for (x = 0; x < 5; x++) begin
+                if (pos >= len) disable outer_loop;
+                lane = 0;
+                end_b = ((8 < len - pos) ? 8 : len - pos);
+                for (b = 0; b < end_b; b++) begin
+                    lane |= longint unsigned'(blk[pos++]) << (8 * b);
                 end
+                state[x + 5 * y] ^= lane;
             end
+        end
     endtask
 
 
