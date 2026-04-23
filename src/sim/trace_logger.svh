@@ -219,6 +219,7 @@ class TraceLogger;
                 end
                 //---
                 $fclose(fd_res);
+                `ifdef HASH_SHA3_ENA
                 //--- hash the completed CSV (after file is fully written and closed)
                 begin : hash_block
                     static Sha3_256 hasher = new();
@@ -253,6 +254,7 @@ class TraceLogger;
                         $display("=== HASH (no golden) [%s] %s", test_base_name, digest);
                     end
                 end : hash_block
+                `endif // HASH_SHA3_ENA
             end    
         join
         cpu_vif.rst_strobe = 1'b1;
