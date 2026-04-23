@@ -70,8 +70,8 @@ pll pll_inst
     .locked    ( pll_locked )
 );
 
-assign imem_clk = cpu_clk;
-assign dmem_clka = clk2;
+assign imem_clk  = clk2;
+assign dmem_clka = clk3;
 
 //--- reset (related to clk)
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
@@ -102,6 +102,7 @@ cpu_core_m cpu
 );
 
 //--------------------- instruction memory (IMEM) -------------------------
+`ifndef IMEM_BRAM
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 imem_lutram 
         #(
@@ -113,6 +114,22 @@ imem_inst
     .addr  ( imem_addr[2 +: (IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH)] ),
     .instr ( instr )
 );
+
+`else
+(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
+imem_bram
+        #(
+            .INIT_FILE  (`IMEM_INIT_FILE                         ),
+            .ADDR_WIDTH ( IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH )
+        )
+imem_inst        
+(
+    .clk   ( imem_clk ),
+    .addr  ( imem_addr[2 +: (IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH)] ),
+    .instr ( instr )
+);
+`endif // IMEM_BRAM
+
 
 //--------------------- data memory (DMEM) --------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
