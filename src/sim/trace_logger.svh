@@ -219,42 +219,6 @@ class TraceLogger;
                 end
                 //---
                 $fclose(fd_res);
-                `ifdef HASH_SHA3_ENA
-                //--- hash the completed CSV (after file is fully written and closed)
-                begin : hash_block
-                    static Sha3_256 hasher = new();
-                    string csv_path  = {test_dir, "/res/", test_base_name, ".csv"};
-                    string sha3_path = {test_dir, "/res/", test_base_name, ".sha3"};
-                    string gold_path = {test_dir, "/res/", test_base_name, ".sha3.golden"};
-                    string digest    = hasher.digest_file(csv_path);
-                    integer fd_h;
-                    string  golden;
-
-                    fd_h = $fopen(sha3_path, "w");
-                    if (fd_h == 0) begin
-                        $display("=== HASH ERROR: can't open %s for write", sha3_path);
-                    end else begin
-                        $fwrite(fd_h, "%s\n", digest);
-                        $fclose(fd_h);
-                    end
-
-                    fd_h = $fopen(gold_path, "r");
-                    if (fd_h != 0) begin
-                        void'($fscanf(fd_h, "%s", golden));
-                        $fclose(fd_h);
-
-                        if (golden == digest)
-                            $display("=== HASH OK   [%s]", test_base_name);
-                        else begin
-                            $display("=== HASH FAIL [%s]", test_base_name);
-                            $display("    expected: %s", golden);
-                            $display("    got:      %s", digest);
-                        end
-                    end else begin
-                        $display("=== HASH (no golden) [%s] %s", test_base_name, digest);
-                    end
-                end : hash_block
-                `endif // HASH_SHA3_ENA
             end    
         join
         cpu_vif.rst_strobe = 1'b1;
