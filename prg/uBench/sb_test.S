@@ -7,12 +7,10 @@
 .eqv TEST_FAIL   2
 .eqv TEST_PASS   1
 
-.data
-.align 2
-test_mem: .space 32
+.eqv BASE_ADDR 0x80000000
 
 .text
-    la x10, test_mem
+    li x10, BASE_ADDR
     li x1, 0x12345678
     li x2, 0x89ABCDEF
 
