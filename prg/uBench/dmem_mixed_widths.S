@@ -1,4 +1,11 @@
 # test05: SW затем SB (частичная запись). Буфер 0x80000100.
+#--- 
+.eqv TEST_RESULT x31
+.eqv TEST_FAIL   2
+.eqv TEST_PASS   1
+
+#---
+
 .globl _start
 _start:
         lui     a1, 0x80000
@@ -22,13 +29,9 @@ _start:
         li      t2, 0xEEBBCCDD
         bne     t1, t2, fail
 
-        lui     a0, 0x80000
-        li      t0, 1
-        sw      t0, 0(a0)
+        addi x31, x0, TEST_PASS
 pass:   j       pass
 
 fail:
-        lui     a0, 0x80000
-        li      t0, 2
-        sw      t0, 0(a0)
+        addi x31, x0, TEST_FAIL
 hang:   j       hang
