@@ -68,6 +68,10 @@ Id_controls_in_t id_controls_in;
 Id_controls_out_t id_output_controls;
 logic id_illegal;
 
+//--- IG
+Imm_input_t Ig_Imm_input;
+
+
 //--- DMEM
 logic       dmem_we;
 logic [2:0] dmem_funct3;
@@ -101,6 +105,8 @@ always_comb begin
         default: rf_wd3 = 'X;
     endcase
 end
+
+assign Ig_Imm_input = instr[31:7];
 
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
@@ -187,7 +193,7 @@ shifter_inst
 //--------------------- IMM_GEN ------------------------
 imm_gen imm_gen_inst
 (
-    .instr (instr),
+    .Imm_in (Ig_Imm_input),
     .imm_type (id_output_controls.imm_type),
     .imm (imm)
 );

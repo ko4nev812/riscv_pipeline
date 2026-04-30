@@ -129,6 +129,7 @@ typedef enum logic [2:0] {
         IMM_J_TYPE = 3'b101,
         IMM_NC = 3'bxxx
     } Imm_type_t;
+typedef logic [24:0] Imm_input_t;
 `endif
 //=== IMM_GEN section (end)
 
