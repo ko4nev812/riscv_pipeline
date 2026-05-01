@@ -175,11 +175,9 @@ def convert_to_hex(asm_file: Path, dump_config: dict, output_dir: Path) -> dict:
         )
         
         combined_output = result.stdout + result.stderr
-        if "Error" in combined_output or "error" in combined_output:
+        if result.stdout != '':
             for line in combined_output.split('\n'):
-                if 'Error' in line or 'error' in line:
-                    errors.append(line.strip())
-                elif 'Processing terminated' in line:
+                if line != '':
                     errors.append(line.strip())
 
             for output_file in hex_files.values():
