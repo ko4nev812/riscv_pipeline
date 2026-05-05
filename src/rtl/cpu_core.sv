@@ -111,6 +111,7 @@ assign Ig_Imm_input = instr[31:7];
 assign id_instr.funct7 = instr[30];
 assign id_instr.funct3 = instr[14:12];
 assign id_instr.opcode = instr[6:2];
+assign id_instr.ones   = instr[1:0];
 assign rs1 = instr[19:15];
 assign rs2 = instr[24:20];
 assign rd = instr[11:7];

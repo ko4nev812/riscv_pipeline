@@ -147,6 +147,7 @@ typedef struct packed {
     logic        funct7;  // [30] bit
     logic [2:0]  funct3;  // [14], [13], [12] bits
     logic [4:0]  opcode;  // [6], [5], [4], [3], [2] bits
+    logic [1:0]  ones;    // [1], [0] bits (should be 'b11 for legal instructions)
 } Id_instr_t;
 
 /*
