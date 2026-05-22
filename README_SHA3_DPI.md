@@ -22,9 +22,11 @@ Create the result directory if needed:
 New-Item -ItemType Directory -Force C:\Users\User\10-RV-NSU\prj-main\rv-nsu\prg\uBench\hex\res
 ```
 
-If the repository is cloned elsewhere, update `TEST_DIR` in `src/sim/trace_logger.svh` locally
+If the repository is cloned elsewhere, update `TEST_DIR` in `src/sim/trace_logger.svh` locally.
 
 ## Enable SHA3 trace
+
+Do not enable TraceLogger by editing SystemVerilog sources manually. In particular, do not uncomment `` `define TRACE_LOGGER_ENA`` in `src/sim/rv_nsu_tb.sv` for this flow. Use the Tcl/environment switches below so the source tree stays unchanged between normal simulation, SHA3 trace simulation, and synthesis.
 
 In Vivado Tcl Console or Vivado batch Tcl, set both flags before `source xbld.tcl`:
 
