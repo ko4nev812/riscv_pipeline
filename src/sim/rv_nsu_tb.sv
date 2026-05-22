@@ -7,12 +7,14 @@
 //------------------------------------------------------------------------------
 
 `include "tb.svh"
-//`include "sha3_256.svh"
 `include "trace_logger.svh"
 `include "risc-v.svh"
 
 //`define TRACE_LOGGER_ENA
 
+`ifdef TRACE_SHA3_DPI_ENA
+`include "sha3_dpi.svh"
+`endif
 
 //******************************************************************************
 //******************************************************************************
@@ -26,6 +28,12 @@ timeprecision 1ps;
 parameter int CLK_PERIOD = 10;
 
 //==============================================================================
+
+`ifdef TRACE_SHA3_DPI_ENA
+initial begin
+    Sha3Dpi::self_test();
+end
+`endif
 
 //--- clock 
 logic ref_clk = 0;

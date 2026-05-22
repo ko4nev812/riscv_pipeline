@@ -6,6 +6,21 @@ set build_imem_ip 0
 set build_tdp_bram_ip 0 ; # TODO: supress warnings about AXI unconnected
 set enable_uart 0
 #---
+set trace_sha3_dpi_ena 0
+if {[info exists ::env(RV_NSU_TRACE_SHA3_DPI)] &&
+    $::env(RV_NSU_TRACE_SHA3_DPI) ne "" &&
+    $::env(RV_NSU_TRACE_SHA3_DPI) ne "0"} {
+    set trace_sha3_dpi_ena 1
+}
+#---
+set trace_logger_ena 0
+if {[info exists ::env(RV_NSU_TRACE_LOGGER)] &&
+    $::env(RV_NSU_TRACE_LOGGER) ne "" &&
+    $::env(RV_NSU_TRACE_LOGGER) ne "0"} {
+    set trace_logger_ena 1
+}
+
+#---
 set prjName rv-nsu
 set prjFPGA xc7a35tcpg236-1     ;# BASYS-3
 #set prjFPGA xc7a35ticsg324-1L  ;# ARTY
@@ -73,6 +88,19 @@ close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
 
+if {$trace_sha3_dpi_ena} {
+    set sha3_dpi_xsc_pre_tcl [file join $cfgDir sha3_dpi_xsc_pre.tcl]
+    set sha3_dpi_cpp [file normalize [file join $simDir sha3_dpi.cpp]]
+
+    set fh [open $sha3_dpi_xsc_pre_tcl w]
+    puts $fh {puts "=== SHA3 DPI: compile C++ with xsc"}
+    puts $fh {set xsc_cmd [auto_execok xsc]}
+    puts $fh {if {$xsc_cmd eq ""} { set xsc_cmd [auto_execok xsc.bat] }}
+    puts $fh {if {$xsc_cmd eq ""} { error "SHA3 DPI: xsc was not found in PATH" }}
+    puts $fh "exec {*}\$xsc_cmd --cppversion 11 -o sha3_dpi \"$sha3_dpi_cpp\""
+    close $fh
+}
+
 add_files -fileset sources_1              \
          $rtlDir/cpu_system.sv            \
          $rtlDir/cpu_core.sv              \
@@ -108,6 +136,11 @@ if $enable_uart {
 add_files -fileset sim_1  \
          $simDir/rv_nsu_tb.sv
 
+if {$trace_sha3_dpi_ena} {
+    add_files -fileset sim_1 $simDir/sha3_dpi.cpp
+    set_property file_type {CPP} [get_files $simDir/sha3_dpi.cpp]
+}
+
 foreach f [glob -nocomplain $tempDir/*.wcfg] {
     set dest [file join $cfgDir [file tail $f]]
     file copy -force $f $dest
@@ -116,11 +149,36 @@ foreach f [glob -nocomplain $tempDir/*.wcfg] {
 
 file delete -force $tempDir  # file mkdir $tempDir
 
-set_property INCLUDE_DIRS "$rtlDir $cfgDir" [get_filesets sim_1]
+set_property INCLUDE_DIRS "$rtlDir $simDir $cfgDir" [get_filesets sim_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]
 set_property used_in_implementation false [get_files  $simDir/rv_nsu_tb.sv]
 set_property top rv_nsu_tb [get_filesets sim_1]
 set_property -name {xsim.simulate.runtime} -value {1000us} -objects [get_filesets sim_1]
+
+#--- Simulation defines
+set xvlog_more_options {}
+if {$trace_logger_ena} {
+    lappend xvlog_more_options -d TRACE_LOGGER_ENA
+}
+if {$trace_sha3_dpi_ena} {
+    lappend xvlog_more_options -d TRACE_SHA3_DPI_ENA
+}
+if {[llength $xvlog_more_options] > 0} {
+    set_property -name {xsim.compile.xvlog.more_options} \
+        -value $xvlog_more_options \
+        -objects [get_filesets sim_1]
+}
+
+#--- DPI settings
+if {$trace_sha3_dpi_ena} {
+    set_property -name {xsim.compile.tcl.pre} \
+        -value $sha3_dpi_xsc_pre_tcl \
+        -objects [get_filesets sim_1]
+
+    set_property -name {xsim.elaborate.xelab.more_options} \
+        -value {--sv_lib sha3_dpi} \
+        -objects [get_filesets sim_1]
+}
 
 puts "=================== create IP's"
 

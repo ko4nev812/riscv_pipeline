@@ -25,6 +25,10 @@
 string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench/hex"; // TODO: use tcl generated names
 string TEST_LST = "ub.lst";                                                 // TODO: use tcl generated names
 
+`ifdef TRACE_SHA3_DPI_ENA
+`include "sha3_dpi.svh"
+`endif
+
 
 //------------------------------------------------------------------------------
 interface cpu_if_t
@@ -84,6 +88,29 @@ class TraceLogger;
     endfunction : zero_DMEM
 
     //--------------------------------------------------------------------------
+    `ifdef TRACE_SHA3_DPI_ENA
+        function string digest_dmem(input int word_count = -1);
+            int word_idx;
+            int words_to_hash;
+            risc_v_pkg::Data_t word;
+
+            words_to_hash = word_count;
+            if (words_to_hash < 0) begin
+                words_to_hash = 1 << risc_v_pkg::DMEM_PORT_ADDR_WIDTH;
+            end
+
+            Sha3Dpi::begin_hash();
+
+            for (word_idx = 0; word_idx < words_to_hash; word_idx++) begin
+                word = `DMEM_OBJ_NAME[word_idx];
+                Sha3Dpi::update_word(word, risc_v_pkg::DATA_BYTE_NUM);
+            end
+
+            return Sha3Dpi::final_hex();
+        endfunction : digest_dmem
+    `endif
+
+    //--------------------------------------------------------------------------
     function int get_reg(input int reg_idx);
         return  `RF_OBJ_NAME[reg_idx];
     endfunction : get_reg
@@ -111,6 +138,9 @@ class TraceLogger;
         for(i = 0; i < NREGS; i++) begin
             $fwrite(fd,", x%1d", i);
         end
+        `ifdef TRACE_SHA3_DPI_ENA
+        $fwrite(fd,", dmem_sha3");
+        `endif
         $fwrite(fd,"\n");    
     endfunction : print_header
 
@@ -148,6 +178,9 @@ class TraceLogger;
         int pass_test_num;
         int failed_test_num;
         int time_expired_test_num;
+        `ifdef TRACE_SHA3_DPI_ENA
+        string dmem_sha3;
+        `endif
 
         failed_test_num = 0;
         time_expired_test_num = 0;
@@ -185,10 +218,20 @@ class TraceLogger;
                     if(!cpu_vif.rst) begin
                         instr_cnt++;
                         //--- TODO: make function
+                        `ifdef TRACE_SHA3_DPI_ENA
+                        #1ps;
+                        dmem_sha3 = digest_dmem();
+                        `endif
+
                         $fwrite(fd_res,"%t %6d %8x %8x \"%s\"", $realtime, instr_cnt, cpu_vif.iaddr, cpu_vif.instr, risc_v_pkg::disasm(cpu_vif.instr));
                         for(i = 0; i < NREGS; i++) begin
                             $fwrite(fd_res,", %8x", get_reg(i));
                         end
+
+                        `ifdef TRACE_SHA3_DPI_ENA
+                        $fwrite(fd_res,", %s", dmem_sha3);
+                        `endif
+
                         $fwrite(fd_res,"\n");    
                         //---
                         if(instr_cnt >= max_instr_num) begin
