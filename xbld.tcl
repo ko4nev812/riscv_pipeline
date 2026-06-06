@@ -5,20 +5,13 @@ set build_pll_ip  1
 set build_imem_ip 0
 set build_tdp_bram_ip 0 ; # TODO: supress warnings about AXI unconnected
 set enable_uart 0
-#---
-set trace_sha3_dpi_ena 0
-if {[info exists ::env(RV_NSU_TRACE_SHA3_DPI)] &&
-    $::env(RV_NSU_TRACE_SHA3_DPI) ne "" &&
-    $::env(RV_NSU_TRACE_SHA3_DPI) ne "0"} {
-    set trace_sha3_dpi_ena 1
-}
-#---
-set trace_logger_ena 0
-if {[info exists ::env(RV_NSU_TRACE_LOGGER)] &&
-    $::env(RV_NSU_TRACE_LOGGER) ne "" &&
-    $::env(RV_NSU_TRACE_LOGGER) ne "0"} {
-    set trace_logger_ena 1
-}
+
+#--- Simulation trace config defaults.
+# xbld.tcl writes these values into cfg/trace_config.svh, similar to
+# cfg/mem_init_path.svh. Edit the generated file after project creation for
+# one local run, or edit these defaults before regenerating the project.
+set trace_logger_ena   1
+set trace_sha3_dpi_ena 1
 
 #---
 set prjName rv-nsu
@@ -88,18 +81,47 @@ close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
 
-if {$trace_sha3_dpi_ena} {
-    set sha3_dpi_xsc_pre_tcl [file join $cfgDir sha3_dpi_xsc_pre.tcl]
-    set sha3_dpi_cpp [file normalize [file join $simDir sha3_dpi.cpp]]
+set trace_cfg_file [file join $cfgDir trace_config.svh]
+set trace_test_dir [string map {\\ /} [file normalize [file join $prjDir prg uBench hex]]]
+file mkdir [file join $trace_test_dir res]
 
-    set fh [open $sha3_dpi_xsc_pre_tcl w]
-    puts $fh {puts "=== SHA3 DPI: compile C++ with xsc"}
-    puts $fh {set xsc_cmd [auto_execok xsc]}
-    puts $fh {if {$xsc_cmd eq ""} { set xsc_cmd [auto_execok xsc.bat] }}
-    puts $fh {if {$xsc_cmd eq ""} { error "SHA3 DPI: xsc was not found in PATH" }}
-    puts $fh "exec {*}\$xsc_cmd --cppversion 11 -o sha3_dpi \"$sha3_dpi_cpp\""
-    close $fh
+set fh [open $trace_cfg_file w]
+puts $fh "\`ifndef TRACE_CONFIG_SVH"
+puts $fh "\`define TRACE_CONFIG_SVH"
+puts $fh ""
+puts $fh "//==== Trace Logger"
+puts $fh "// Comment TRACE_LOGGER_ENA to disable the test trace runner."
+if {$trace_logger_ena} {
+    puts $fh "\`define TRACE_LOGGER_ENA"
+} else {
+    puts $fh "//\`define TRACE_LOGGER_ENA"
 }
+puts $fh "\`define TRACE_TEST_DIR \"$trace_test_dir\""
+puts $fh "\`define TRACE_TEST_LST \"ub.lst\""
+puts $fh ""
+puts $fh "//==== SHA3 DPI"
+puts $fh "// Comment TRACE_SHA3_DPI_ENA to keep TraceLogger but remove the SHA3 column."
+if {$trace_sha3_dpi_ena} {
+    puts $fh "\`define TRACE_SHA3_DPI_ENA"
+} else {
+    puts $fh "//\`define TRACE_SHA3_DPI_ENA"
+}
+puts $fh ""
+puts $fh "\`endif  // TRACE_CONFIG_SVH"
+close $fh
+
+puts "Generated trace config: $trace_cfg_file"
+
+set sha3_dpi_xsc_pre_tcl [file join $cfgDir sha3_dpi_xsc_pre.tcl]
+set sha3_dpi_cpp [file normalize [file join $simDir sha3_dpi.cpp]]
+
+set fh [open $sha3_dpi_xsc_pre_tcl w]
+puts $fh {puts "=== SHA3 DPI: compile C++ with xsc"}
+puts $fh {set xsc_cmd [auto_execok xsc]}
+puts $fh {if {$xsc_cmd eq ""} { set xsc_cmd [auto_execok xsc.bat] }}
+puts $fh {if {$xsc_cmd eq ""} { error "SHA3 DPI: xsc was not found in PATH" }}
+puts $fh "exec {*}\$xsc_cmd --cppversion 11 -o sha3_dpi \"$sha3_dpi_cpp\""
+close $fh
 
 add_files -fileset sources_1              \
          $rtlDir/cpu_system.sv            \
@@ -134,12 +156,10 @@ if $enable_uart {
 #set_property FILE_TYPE {TCL} [get_files [file join $constDir "rv_nsu_basys_3.tcl"]]
 
 add_files -fileset sim_1  \
-         $simDir/rv_nsu_tb.sv
-
-if {$trace_sha3_dpi_ena} {
-    add_files -fileset sim_1 $simDir/sha3_dpi.cpp
-    set_property file_type {CPP} [get_files $simDir/sha3_dpi.cpp]
-}
+         $simDir/rv_nsu_tb.sv \
+         $trace_cfg_file \
+         $simDir/sha3_dpi.cpp
+set_property file_type {CPP} [get_files $simDir/sha3_dpi.cpp]
 
 foreach f [glob -nocomplain $tempDir/*.wcfg] {
     set dest [file join $cfgDir [file tail $f]]
@@ -155,30 +175,14 @@ set_property used_in_implementation false [get_files  $simDir/rv_nsu_tb.sv]
 set_property top rv_nsu_tb [get_filesets sim_1]
 set_property -name {xsim.simulate.runtime} -value {1000us} -objects [get_filesets sim_1]
 
-#--- Simulation defines
-set xvlog_more_options {}
-if {$trace_logger_ena} {
-    lappend xvlog_more_options -d TRACE_LOGGER_ENA
-}
-if {$trace_sha3_dpi_ena} {
-    lappend xvlog_more_options -d TRACE_SHA3_DPI_ENA
-}
-if {[llength $xvlog_more_options] > 0} {
-    set_property -name {xsim.compile.xvlog.more_options} \
-        -value $xvlog_more_options \
-        -objects [get_filesets sim_1]
-}
-
 #--- DPI settings
-if {$trace_sha3_dpi_ena} {
-    set_property -name {xsim.compile.tcl.pre} \
-        -value $sha3_dpi_xsc_pre_tcl \
-        -objects [get_filesets sim_1]
+set_property -name {xsim.compile.tcl.pre} \
+    -value $sha3_dpi_xsc_pre_tcl \
+    -objects [get_filesets sim_1]
 
-    set_property -name {xsim.elaborate.xelab.more_options} \
-        -value {--sv_lib sha3_dpi} \
-        -objects [get_filesets sim_1]
-}
+set_property -name {xsim.elaborate.xelab.more_options} \
+    -value {--sv_lib sha3_dpi} \
+    -objects [get_filesets sim_1]
 
 puts "=================== create IP's"
 

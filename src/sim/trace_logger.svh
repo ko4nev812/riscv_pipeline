@@ -22,8 +22,17 @@
 `define RF_OBJ_NAME   $root.rv_nsu_tb.cpu_system_duv.cpu.rf_inst.regFile
 `define RF_DBG_NUM    31
 
-string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench/hex"; // TODO: use tcl generated names
-string TEST_LST = "ub.lst";                                                 // TODO: use tcl generated names
+`ifdef TRACE_TEST_DIR
+string TEST_DIR = `TRACE_TEST_DIR;
+`else
+string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench/hex";
+`endif
+
+`ifdef TRACE_TEST_LST
+string TEST_LST = `TRACE_TEST_LST;
+`else
+string TEST_LST = "ub.lst";
+`endif
 
 `ifdef TRACE_SHA3_DPI_ENA
 `include "sha3_dpi.svh"
@@ -151,7 +160,10 @@ class TraceLogger;
         integer fd;
 
         $display("%s", { test_dir, "/", TEST_LST });
-        fd = $fopen({ test_dir, "/", TEST_LST },"r"); // TODO: check file open error
+        fd = $fopen({ test_dir, "/", TEST_LST },"r");
+        if(fd == 0) begin
+            $fatal(1, "[E] In module (%m) - failed to open test list: %s", { test_dir, "/", TEST_LST });
+        end
         idx = 0;
         while($fscanf(fd, "%s", str) > 0) begin
             test_array = new[idx+1](test_array);
@@ -200,6 +212,9 @@ class TraceLogger;
                 test_base_name = get_test_name(test_file_short_name);
                 test_file_full_name = { test_dir, "/", test_file_short_name };
                 fd_res = $fopen({ test_dir, "/res/", test_base_name, ".csv" },"w");
+                if(fd_res == 0) begin
+                    $fatal(1, "[E] In module (%m) - failed to open result file for test: %s", test_base_name);
+                end
                 print_header(fd_res);
                 cpu_vif.test_name = test_file_short_name;
                 $display("+++ test: %4d (%12s) started", test_idx+1, cpu_vif.test_name);

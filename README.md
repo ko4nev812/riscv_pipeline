@@ -17,5 +17,8 @@ Future improvements and extensions are planned.
 - **Xilinx Vivado** 2019.2 or later
 - **SystemVerilog** support enabled
 
+## Simulation Notes
+- SHA3 DPI TraceLogger flow: see `README_SHA3_DPI.md`
+
 ### Hardware
 - **FPGA**: Xilinx Artix-7

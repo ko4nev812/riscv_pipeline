@@ -7,10 +7,9 @@
 //------------------------------------------------------------------------------
 
 `include "tb.svh"
+`include "trace_config.svh"
 `include "trace_logger.svh"
 `include "risc-v.svh"
-
-//`define TRACE_LOGGER_ENA
 
 `ifdef TRACE_SHA3_DPI_ENA
 `include "sha3_dpi.svh"
