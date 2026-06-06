@@ -6,10 +6,10 @@ This branch adds an optional simulation-only SHA3-256 column for the TraceLogger
 
 Use the normal project script:
 
-```tcl
+
 cd <repo-root>
 source xbld.tcl
-```
+
 
 `xbld.tcl` now generates two config headers in `cfg/`:
 
@@ -20,30 +20,23 @@ source xbld.tcl
 
 After `source xbld.tcl`, open:
 
-```text
 /rv-nsu/cfg/trace_config.svh
-```
+
 
 Typical generated content:
 
-```systemverilog
 `define TRACE_LOGGER_ENA
 `define TRACE_TEST_DIR "/rv-nsu/prg/uBench/hex"
 `define TRACE_TEST_LST "ub.lst"
 `define TRACE_SHA3_DPI_ENA
-```
 
 To disable only SHA3 while keeping the TraceLogger CSV flow:
 
-```systemverilog
 //`define TRACE_SHA3_DPI_ENA
-```
 
 To disable the TraceLogger runner:
 
-```systemverilog
 //`define TRACE_LOGGER_ENA
-```
 
 If you run `source xbld.tcl` again, `trace_config.svh` is regenerated. For a permanent default, edit `trace_logger_ena` or `trace_sha3_dpi_ena` near the top of `xbld.tcl`.
 
@@ -59,24 +52,18 @@ The test directory must contain:
 
 In Vivado Tcl Console:
 
-```tcl
 cd <repo-root>
 source xbld.tcl
 launch_simulation
 run all
-```
 
 With SHA3 enabled, XSim should print:
 
-```text
 === SHA3 DPI self-test PASS
-```
 
 Each TraceLogger CSV gets a final column:
 
-```text
 dmem_sha3
-```
 
 Repeated hashes are normal while DMEM does not change. Store tests such as `sw_test` should change `dmem_sha3` after a memory write takes effect.
 
@@ -86,15 +73,11 @@ Repeated hashes are normal while DMEM does not change. Store tests such as `sw_t
 
 If the library is not found, set an explicit path before launching Vivado:
 
-```powershell
 $env:RV_NSU_LIBCRYPTO = "C:\path\to\libcrypto-3-x64.dll"
-```
 
 or in Tcl:
 
-```tcl
 set ::env(RV_NSU_LIBCRYPTO) {C:/path/to/libcrypto-3-x64.dll}
-```
 
 This variable points only to OpenSSL itself. It is not used to enable TraceLogger/SHA3 macros.
 
