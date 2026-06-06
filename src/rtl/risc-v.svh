@@ -228,6 +228,19 @@ typedef enum logic [2:0] {
 } LoadInstr_t;
 //===DMEM section (end)
 
+//===UART section
+localparam RV_BAUD_RATE  = 115200;
+localparam RV_TIME_BASE  = 20;  // ns per system clock period
+localparam RV_DATA_WIDTH = 8;
+
+
+typedef enum logic[1:0] {
+    TXSTATUS_ADDR = 2'h0,
+    TXDATA_ADDR   = 2'h1,
+    RXSTATUS_ADDR = 2'h2,
+    RXDATA_ADDR   = 2'h3
+} UARTMapAddrs;
+//===UART section (end)
 
 //=== DEBUG
 
@@ -328,3 +341,7 @@ endfunction : disasm
 endpackage : risc_v_pkg
 
 `endif // RISC_V_SVH
+
+
+
+

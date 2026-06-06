@@ -17,7 +17,10 @@ module cpu_system import risc_v_pkg::*;
 (
     //--------------------------------------------------------------------------
     input  logic  ref_clk,
-
+    `ifdef UART_ENABLE
+        input  wire uart_rxd,
+        output wire uart_txd,
+    `endif
     //--------------------------------------------------------------------------
     `ifdef CFG_NAME_BASYS_3
         output logic [`LED_NUM-1:0]  led
@@ -43,6 +46,11 @@ Addr_t        dmem_addr;
 Data_t        dmem_wdata;
 Data_t        dmem_rdata;
 
+`ifdef UART_ENABLE
+    Data_t        data_to_cpu;
+    logic         uart_ena;
+`endif
+
 logic clk2;
 logic clk3;
 
@@ -50,7 +58,9 @@ logic rst_strobe = 1'b0;
 logic cpu_rst;
 
 assign cpu_rst = rst | rst_strobe;
-
+`ifdef UART_ENABLE
+    assign uart_ena = dmem_addr[31:28] == 4'b0010;
+`endif
 //==============================================================================
 `ifdef SIMULATOR
 str_t asm_instr;
@@ -98,7 +108,11 @@ cpu_core_m cpu
     .dmem_addr     ( dmem_addr     ), 
     .dmem_byte_we  ( dmem_byte_we  ), 
     .dmem_data_in  ( dmem_wdata    ), 
+`ifdef UART_ENABLE
+    .dmem_data_out ( data_to_cpu   ) 
+`else 
     .dmem_data_out ( dmem_rdata    ) 
+`endif
 );
 
 //--------------------- instruction memory (IMEM) -------------------------
@@ -156,6 +170,30 @@ dmem_inst
     .dinb  ( '0           ),
     .doutb (              )
 );
+
+// ------------------ uart subsystem -------------------------------------
+`ifdef UART_ENABLE
+    logic [1:0]   uart_reg_offset;
+    Data_t        uart_rdata;
+
+    always_comb begin
+        uart_reg_offset = dmem_addr[3:2];
+        data_to_cpu = uart_ena ? uart_rdata : dmem_rdata;
+    end
+
+    uart_mmio_wrapper uart_inst (
+        .clk(dmem_clka),
+        .rst(cpu_rst),
+    
+        .RXD(uart_rxd),
+        .TXD(uart_txd),
+    
+        .byte_we(dmem_byte_we),
+        .reg_addr(uart_reg_offset),
+        .wdata(dmem_wdata),
+        .rdata(uart_rdata)
+    );
+`endif
 
 //--------------------- simplest port -------------------------------------
 localparam logic [DMEM_PORT_ADDR_WIDTH:0] LED_PORT_ADDR = {1'b1, {DMEM_PORT_ADDR_WIDTH{1'b0}}, 2'b00}; // { 1 - high bit, DMEM_PORT_ADDR_WIDTH-width zeros, 2-low-zeros }

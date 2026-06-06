@@ -4,7 +4,7 @@ puts "=================== create prj"
 set build_pll_ip  1
 set build_imem_ip 0
 set build_tdp_bram_ip 0 ; # TODO: supress warnings about AXI unconnected
-
+set enable_uart 0
 #---
 set prjName rv-nsu
 set prjFPGA xc7a35tcpg236-1     ;# BASYS-3
@@ -62,6 +62,13 @@ puts $fh "//==== DMEM part"
 puts $fh "\`define DMEM_INIT_FILE \"\""
 puts $fh ""
 puts $fh "\`endif  // MEM_INIT_PATH_SVH"
+
+if $enable_uart {
+    puts $fh "\`ifndef UART_ENABLE"
+    puts $fh "\`define UART_ENABLE"
+    puts $fh "\`endif"
+}
+
 close $fh
 
 puts "Generated IMEM init defines for all .mem files in $prgDir"
@@ -82,9 +89,21 @@ add_files -fileset sources_1              \
          $libDir/pf.sv                    \
          $libDir/dual_port_mem.sv         \
          $init_def_file
+
 add_files -fileset constrs_1 \
-         $constDir/rv_nsu_basys_3.xdc \
-         $constDir/rv_nsu_basys_3.sdc
+         $constDir/rv_nsu_basys_3.sdc \
+         $constDir/rv_nsu_basys_3.xdc
+
+if $enable_uart {
+    add_files -fileset sources_1              \
+             $rtlDir/uart_wrapper.sv          \
+             $libDir/uart.sv
+
+    add_files -fileset constrs_1 $constDir/uart_basys_3.xdc
+}
+
+#add_files -fileset constrs_1 [file join $constDir "rv_nsu_basys_3.tcl"]
+#set_property FILE_TYPE {TCL} [get_files [file join $constDir "rv_nsu_basys_3.tcl"]]
 
 add_files -fileset sim_1  \
          $simDir/rv_nsu_tb.sv
@@ -114,6 +133,36 @@ if $build_pll_ip {
     set ip_pll_clk    50.0
     set ip_pll_phase2 45.0
     set ip_pll_phase3 200.0
+
+    puts "\n------------------- Update TIME_BASE for UART"
+
+    set time_base_ns [expr {int(1000.0 / $ip_pll_clk)}]
+
+    if {$time_base_ns < 1.0} {
+        puts "  WARNING: Clock frequency > 1000 MHz ($ip_pll_clk MHz)"
+        puts "  TIME_BASE would be < 1 ns, using 1 ns"
+        set time_base_value 1
+    }
+
+    puts "  PLL Clock: $ip_pll_clk MHz"
+    puts "  TIME_BASE: $time_base_ns ns"
+
+    set svh_file "$rtlDir/risc-v.svh"
+    if {[file exists $svh_file]} {
+        set fp [open $svh_file r]
+        set content [read $fp]
+        close $fp
+    
+        regsub -all {RV_TIME_BASE\s*=\s*\d+} $content "RV_TIME_BASE  = $time_base_ns" content
+    
+        set fp [open $svh_file w]
+        puts $fp $content
+        close $fp
+    
+        puts "  Updated $svh_file"
+    } else {
+        puts "  ERROR: $svh_file not found!"
+    }
 
     file mkdir $ipDir
     set ip_pll_dir "$ipDir/$ip_pll_name"
