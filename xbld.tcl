@@ -6,10 +6,6 @@ set build_imem_ip 0
 set build_tdp_bram_ip 0 ; # TODO: supress warnings about AXI unconnected
 set enable_uart 0
 
-#--- Simulation trace config defaults.
-# xbld.tcl writes these values into cfg/trace_config.svh, similar to
-# cfg/mem_init_path.svh. Edit the generated file after project creation for
-# one local run, or edit these defaults before regenerating the project.
 set trace_logger_ena   1
 set trace_sha3_dpi_ena 1
 
