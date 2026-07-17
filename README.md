@@ -1,16 +1,28 @@
-# RISC-V I32 Core - SystemVerilog Implementation
+# RISC-V 32I Pipeline Core - SystemVerilog Implementation
 
 ## Overview
-A synthesizable 32-bit RISC-V processor core implementing the **RV32I Base Integer Instruction Set**, designed for Xilinx Artix-7 FPGAs using SystemVerilog and Vivado design tools.
+A synthesizable 5-stage pipeline RISC-V processor core implementing the **RV32I Base Integer Instruction Set**, designed for Xilinx Artix-7 FPGAs using SystemVerilog and Vivado design tools.
 
 ## Project Status
-**Development Phase** 
-The core is currently in development. 
-Future improvements and extensions are planned.
+**Development Phase**  
+The core currently implements a 5-stage pipeline with **Stall-based hazard resolution**.  
+Future enhancements may include forwarding, branch prediction, and interrupt handling.
 
 ## Architecture
-- 32-bit RISC-V
+- **5-stage pipeline**: IF, ID, EX, MEM, WB
+- **Hazard resolution**: Stall mechanism for data and control hazards
+- 32-bit RISC-V RV32I
 - Little-endian byte ordering
+
+## Pipeline Stages
+
+| Stage | Operation |
+|-------|-----------|
+| **IF** | Instruction fetch from IMEM |
+| **ID** | Decode, register file read, immediate generation, Branch unit |
+| **EX** | ALU operations, address calculation |
+| **MEM** | Data memory access |
+| **WB** | Write back to register file |
 
 ## Requirements
 ### Software
