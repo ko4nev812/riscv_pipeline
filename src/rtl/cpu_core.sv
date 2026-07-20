@@ -119,7 +119,7 @@ assign rd = instr[11:7];
 
 //--------------------- PROGRAM COUNTER -----------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-program_counter
+program_counter_m
 #(
     .WIDTH         ( $bits(Addr_t) ),
     .PC_START_ADDR ( PC_START_ADDR)
@@ -135,7 +135,7 @@ pc_inst
 
 //--------------------- INSTRUCTION DECODER -------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-id id_inst
+id_m id_inst
 (
     .instr ( id_instr ),
     .input_controls ( id_controls_in ),
@@ -144,7 +144,7 @@ id id_inst
 );
 //--------------------- REGISTER FILE -------------------------------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-register_file
+register_file_m
 #(
     .XLEN ( XLEN )
 )
@@ -192,7 +192,7 @@ shifter_inst
 );
 
 //--------------------- IMM_GEN ------------------------
-imm_gen imm_gen_inst
+imm_gen_m imm_gen_inst
 (
     .Imm_in (Ig_Imm_input),
     .imm_type (id_output_controls.imm_type),

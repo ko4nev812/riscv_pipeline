@@ -1,6 +1,6 @@
 `include "risc-v.svh"
 
-module uart_mmio_wrapper import risc_v_pkg::*;
+module uart_mmio_wrapper_m import risc_v_pkg::*;
         #(  
             parameter BAUD_RATE  = RV_BAUD_RATE,
             parameter TIME_BASE  = RV_TIME_BASE,

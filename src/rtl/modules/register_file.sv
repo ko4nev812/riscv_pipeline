@@ -2,7 +2,7 @@
 // `define REG_BUS ($clog2(`REG_CNT)) // REG_BUS = 5
 // `define XLEN 32
 
-module register_file #(
+module register_fil_m #(
     parameter  XLEN = 32,
     parameter  REG_CNT = 32,
     localparam REG_BUS = ($clog2(REG_CNT))

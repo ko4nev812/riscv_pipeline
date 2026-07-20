@@ -1,16 +1,13 @@
 `include "risc-v.svh"
 
 module branch_unit_m
-#(
-    parameter int XLEN = 32
-)
 (
-    input  logic [XLEN-1:0] rd1,
-    input  logic [XLEN-1:0] rd2,
-    input  logic            br_un,   // 0 = signed compare, 1 = unsigned compare
+    input  Data_t rd1,
+    input  Data_t rd2,
+    input  logic  br_un,   // 0 = signed compare, 1 = unsigned compare
 
-    output logic            br_eq,
-    output logic            br_lt
+    output logic  br_eq,
+    output logic  br_lt
 );
 
 //timeunit      1ns;

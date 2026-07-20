@@ -118,7 +118,7 @@ cpu_core_m cpu
 //--------------------- instruction memory (IMEM) -------------------------
 `ifndef IMEM_BRAM
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-imem_lutram 
+imem_lutram_m 
         #(
             .INIT_FILE  (`IMEM_INIT_FILE                         ),
             .ADDR_WIDTH ( IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH )
@@ -131,7 +131,7 @@ imem_inst
 
 `else
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-imem_bram
+imem_bram_m
         #(
             .INIT_FILE  (`IMEM_INIT_FILE                         ),
             .ADDR_WIDTH ( IMEM_ADDR_BYTE_WIDTH - BYTE_ADDR_WIDTH )

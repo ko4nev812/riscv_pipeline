@@ -167,38 +167,47 @@ localparam int WB_SEL_LEN = 2;
 typedef enum logic [WB_SEL_LEN-1:0] {
     WB_PC4_OUT     = 2'b00,
     WB_ALU_OUT     = 2'b01,
-    WB_SHIFTER_OUT = 2'b10,
-    WB_DMEM_OUT    = 2'b11,
+    WB_DMEM_OUT    = 2'b10,
     WB_ANY         = 2'bxx 
 } WB_SEL_t;
+
+typedef enum logic {
+    AS_ALU_OUT = 1'b0,
+    AS_SHIFT_OUT = 1'b1,
+    AS_ANY = 1'bx
+} ALUSHIFT_sel_t;
 
 
 /*
  * Instruction decoder control OUTPUT signals.
  *
  * Output control signals:
- *   - reg_wr      write to RF - 0: disabled, 1: enabled
- *   - dmem_we     write to DMEM - 0: disabled, 1: enabled
- *   - a_sel       first operand for ALU - 0: PC, 1: rd1
- *   - b_sel       second operand for ALU - 0: imm, 1: rd2
- *   - sh_sel      type of shift - 3'b100: SLL, 3'b010: SRL, 3'b001: SRA
- *   - br_un       type of branch comparison - 0: signed, 1: unsigned
- *   - pc_sel      next PC is - 0: ALU output, 1: PC+4
- *   - alu_sel     ALU op code: 0: add, 1: sub, 2: and, 3: or, 4: xor, 5: slt, 6: sltu, 7: lui, 8: jalr
- *   - wb_sel      source for write to RF: 0: PC+4, 1: ALU out, 2: shifter out, 3: dmem out
- *   - imm_type    type of instruction: 0: R, 1: I, 2: S, 3: B, 4: U, 5: J
+ *   - reg_wr          write to RF - 0: disabled, 1: enabled
+ *   - dmem_we         write to DMEM - 0: disabled, 1: enabled
+ *   - a_sel           first operand for ALU - 0: PC, 1: rd1
+ *   - b_sel           second operand for ALU - 0: imm, 1: rd2
+ *   - sh_sel          type of shift - 3'b100: SLL, 3'b010: SRL, 3'b001: SRA
+ *   - br_un           type of branch comparison - 0: signed, 1: unsigned
+ *   - jf_id           jump from instruction decode stage - 0: not jump, 1: will jump
+ *   - alu_sel         ALU op code: 0: add, 1: sub, 2: and, 3: or, 4: xor, 5: slt, 6: sltu, 7: lui, 8: jalr
+ *   - wb_sel          source for write to RF: 0: PC+4, 1: ALU/SHIFT out, 2: dmem out
+ *   - jfexe           jump from execute - 0: not jump, 1: will jump (only jalr instruction)
+ *   - alushift_sel    alu or shift take - 0: alu, 1: shift
+ *   - imm_type        type of instruction: 0: R, 1: I, 2: S, 3: B, 4: U, 5: J
  */
 typedef struct packed {
-    logic        reg_wr;
-    logic        dmem_we;
-    logic        a_sel;
-    logic        b_sel;
-    shift_sel_t  sh_sel;
-    logic        br_un;
-    logic        pc_sel;
-    ALU_SEL_t    alu_sel;
-    WB_SEL_t     wb_sel;
-    Imm_type_t   imm_type;
+    logic           reg_wr;
+    logic           dmem_sel;
+    logic           a_sel;
+    logic           b_sel;
+    shift_sel_t     sh_sel;
+    logic           br_un;
+    logic           jf_id;
+    ALU_SEL_t       alu_sel;
+    WB_SEL_t        wb_sel;
+    logic           jf_exe;
+    ALUSHIFT_sel_t  alushift_sel;
+    Imm_type_t      imm_type;
 } Id_controls_out_t;
 
 
@@ -226,7 +235,99 @@ typedef enum logic [2:0] {
     LOAD_LBU = 3'b100,
     LOAD_LHU = 3'b101
 } LoadInstr_t;
+
+typedef enum logic [3:0]{
+    DMEMS_LB  = 4'b0000,
+    DMEMS_LH  = 4'b0001,
+    DMEMS_LW  = 4'b0010,
+    DMEMS_LBU = 4'b0100,
+    DMEMS_LHU = 4'b0101,
+
+    DMEMS_SB  = 4'b1000,
+    DMEMS_SH  = 4'b1001,
+    DMEMS_SW  = 4'b1010,
+    DMEMS_ANY = 4'b0xxx
+} Dmem_sel_t;
 //===DMEM section (end)
+
+
+// ================================================
+// ============= STAGE CATEGORY ===================
+
+// ===FETCH section
+// interstage buffer (ISB)
+typedef struct packed {
+    Addr_t pc,
+    Instr_t instr,
+    logic valid
+} ISB_fetch_t;
+// ===FETCH section (end)
+
+
+// ===DECODE section
+// interstage buffer (ISB)
+typedef struct packed {
+    Addr_t pc,
+    Data_t rf_rd1,
+    Data_t rf_rd2,
+    Imm_t imm,
+    RegAddr_t rs1,
+    RegAddr_t rs2,
+    RegAddr_t rd,
+    ALU_SEL_t alu_sel,
+    shift_sel_t shift_sel,
+    logic a_sel,
+    logic b_sel,
+    WB_SEL_t wb_sel,
+    logic reg_wr,
+    Dmem_sel_t dmem_sel,
+    logic jf_exe,
+    logic alushift_sel,
+    logic valid
+} ISB_decode_t;
+// ===DECODE section (and)
+
+
+// ===EXECUTE section
+// interstage buffer (ISB)
+typedef struct packed {
+    Data_t alu_out,
+    Data_t rf_rd2,
+    RegAddr_t rd,
+    WB_SEL_t wb_sel,
+    logic reg_wr,
+    Dmem_sel_t dmem_sel,
+    Addr_t pc4,
+    logic valid
+} ISB_execute_t;
+// ===EXECUTE section (end)
+
+
+// ===MEMORY section
+// interstage buffer (ISB)
+typedef struct packed {
+    Data_t alu_out,
+    Data_t dmem_data_out,
+    RegAddr_t rd,
+    WB_SEL_t wb_sel,
+    logic reg_wr,
+    Addr_t pc4,
+    logic valid
+} ISB_memory_t;
+// ===MEMORY section (end)
+
+
+// ===WRITE BACK section
+// ===WRITE BACK section (end)
+
+
+// =================================================
+
+
+
+
+
+
 
 //===UART section
 localparam RV_BAUD_RATE  = 115200;
@@ -241,6 +342,9 @@ typedef enum logic[1:0] {
     RXDATA_ADDR   = 2'h3
 } UARTMapAddrs;
 //===UART section (end)
+
+
+
 
 //=== DEBUG
 

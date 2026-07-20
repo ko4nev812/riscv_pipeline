@@ -28,7 +28,7 @@
  *      └────┴───────────────────┴────┴───────────────────┴────────┴────┘
  *       24   23               14  13  12                5 4      1   0
  */
-module imm_gen import risc_v_pkg::*;
+module imm_gen_m import risc_v_pkg::*;
 (
     input  Imm_input_t  Imm_in,
     input  Imm_type_t   imm_type,
