@@ -50,4 +50,4 @@ module imm_gen_m import risc_v_pkg::*;
         endcase
     end
     
-endmodule : imm_gen
+endmodule : imm_gen_m

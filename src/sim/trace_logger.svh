@@ -25,7 +25,7 @@
 `ifdef TRACE_TEST_DIR
 string TEST_DIR = `TRACE_TEST_DIR;
 `else
-string TEST_DIR = "C:/Users/User/10-RV-NSU/prj-main/rv-nsu/prg/uBench/hex";
+string TEST_DIR = "C:/Users/Lecoo/Documents/riscv_pipeline/prg/uBench";
 `endif
 
 `ifdef TRACE_TEST_LST

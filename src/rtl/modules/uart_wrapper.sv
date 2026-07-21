@@ -116,4 +116,4 @@ module uart_mmio_wrapper_m import risc_v_pkg::*;
         endcase
     end
 
-endmodule : uart_mmio_wrapper
+endmodule : uart_mmio_wrapper_m

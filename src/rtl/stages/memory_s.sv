@@ -69,4 +69,4 @@ end
 
 
 
-endmodule : decode_stage
+endmodule : memory_stage

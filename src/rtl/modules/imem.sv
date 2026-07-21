@@ -33,7 +33,7 @@ module imem_lutram_m import risc_v_pkg::*;
     
     assign instr = instr_reg;
 
-endmodule : imem_lutram
+endmodule : imem_lutram_m
 
 //------------------------------------------------------------------------------
 module imem_bram_m import risc_v_pkg::*;
@@ -71,4 +71,4 @@ imem_inst
     .doutb (              )
 );
 
-endmodule : imem_bram
+endmodule : imem_bram_m

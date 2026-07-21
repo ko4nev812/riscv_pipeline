@@ -1,9 +1,6 @@
 `include "risc-v.svh"
 
 module fetch_stage import risc_v_pkg::*;
-#(
-    parameter Addr_t PC_START_ADDR = '0
-)
 (
     output ISB_fetch_t isb_fetch,
     input logic isb_fetch_stall,
@@ -20,18 +17,18 @@ module fetch_stage import risc_v_pkg::*;
 
     // --- imem interface
     output Addr_t imem_addr,
-    input  Instr_t imem_instr,
+    input  Instr_t imem_instr
 );
 
 Addr_t next_pc;
 Addr_t pc;
 
 always_comb begin
-    next_pc = pc+4
+    next_pc = pc+4;
 
     if (rst)
         next_pc = PC_START_ADDR;
-    if (stall_pcs)
+    if (stall_pc)
         next_pc = pc;
     if (jf_exe)
         next_pc = alu_out;

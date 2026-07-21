@@ -1,6 +1,6 @@
 `include "risc-v.svh"
 
-module branch_unit_m
+module branch_unit_m import risc_v_pkg::*;
 (
     input  Data_t rd1,
     input  Data_t rd2,

@@ -7,11 +7,11 @@ module execute_stage import risc_v_pkg::*;(
 
     // jalr instruction
     output logic jf_exe,
-    output Addr_t alures
+    output Addr_t alures,
 
 
     input logic clk,
-    input logic rst,
+    input logic rst
 );
 
 //--- ALU

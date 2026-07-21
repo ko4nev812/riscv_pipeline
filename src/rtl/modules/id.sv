@@ -98,4 +98,4 @@ module id_m import risc_v_pkg::*;
         end
     end
 
-endmodule : id
+endmodule : id_m

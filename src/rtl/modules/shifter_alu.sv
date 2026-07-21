@@ -88,4 +88,4 @@ module risc_v_shifter_m
 
 `endif
 
-endmodule  // risc_v_shifter_m
+endmodule : risc_v_shifter_m

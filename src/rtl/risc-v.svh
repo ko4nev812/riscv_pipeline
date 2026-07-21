@@ -81,7 +81,7 @@ typedef Data_t                           Addr_t;
 
 
 //localparam Addr_t PC_START_ADDR = 32'H_0040_0000;
-localparam Addr_t PC_START_ADDR = 32'H_0000_0000;
+localparam Addr_t PC_START_ADDR = 32'h0000_0000;
 
 //=== common section (end)
 
@@ -132,6 +132,32 @@ typedef enum logic [2:0] {
 typedef logic [24:0] Imm_input_t;
 `endif
 //=== IMM_GEN section (end)
+
+
+
+//===DMEM section
+typedef enum logic [2:0] {
+    LOAD_LB  = 3'b000,
+    LOAD_LH  = 3'b001,
+    LOAD_LW  = 3'b010,
+    LOAD_LBU = 3'b100,
+    LOAD_LHU = 3'b101
+} LoadInstr_t;
+
+typedef enum logic [3:0]{
+    DMEMS_LB  = 4'b0000,
+    DMEMS_LH  = 4'b0001,
+    DMEMS_LW  = 4'b0010,
+    DMEMS_LBU = 4'b0100,
+    DMEMS_LHU = 4'b0101,
+
+    DMEMS_SB  = 4'b1000,
+    DMEMS_SH  = 4'b1001,
+    DMEMS_SW  = 4'b1010,
+    DMEMS_ANY = 4'b0xxx
+} Dmem_sel_t;
+//===DMEM section (end)
+
 
 
 //=== ID section 
@@ -197,7 +223,7 @@ typedef enum logic {
  */
 typedef struct packed {
     logic           reg_wr;
-    logic           dmem_sel;
+    Dmem_sel_t      dmem_sel;
     logic           a_sel;
     logic           b_sel;
     shift_sel_t     sh_sel;
@@ -227,28 +253,7 @@ typedef enum logic [INSTR_TYPE_LEN-1:0] {
 `endif
 //=== ID section (end)
 
-//===DMEM section
-typedef enum logic [2:0] {
-    LOAD_LB  = 3'b000,
-    LOAD_LH  = 3'b001,
-    LOAD_LW  = 3'b010,
-    LOAD_LBU = 3'b100,
-    LOAD_LHU = 3'b101
-} LoadInstr_t;
 
-typedef enum logic [3:0]{
-    DMEMS_LB  = 4'b0000,
-    DMEMS_LH  = 4'b0001,
-    DMEMS_LW  = 4'b0010,
-    DMEMS_LBU = 4'b0100,
-    DMEMS_LHU = 4'b0101,
-
-    DMEMS_SB  = 4'b1000,
-    DMEMS_SH  = 4'b1001,
-    DMEMS_SW  = 4'b1010,
-    DMEMS_ANY = 4'b0xxx
-} Dmem_sel_t;
-//===DMEM section (end)
 
 
 // ================================================
@@ -257,9 +262,9 @@ typedef enum logic [3:0]{
 // ===FETCH section
 // interstage buffer (ISB)
 typedef struct packed {
-    Addr_t pc,
-    Instr_t instr,
-    logic valid
+    Addr_t pc;
+    Instr_t instr;
+    logic valid;
 } ISB_fetch_t;
 // ===FETCH section (end)
 
@@ -267,23 +272,23 @@ typedef struct packed {
 // ===DECODE section
 // interstage buffer (ISB)
 typedef struct packed {
-    Addr_t pc,
-    Data_t rf_rd1,
-    Data_t rf_rd2,
-    Imm_t imm,
-    RegAddr_t rs1,
-    RegAddr_t rs2,
-    RegAddr_t rd,
-    ALU_SEL_t alu_sel,
-    shift_sel_t shift_sel,
-    logic a_sel,
-    logic b_sel,
-    WB_SEL_t wb_sel,
-    logic reg_wr,
-    Dmem_sel_t dmem_sel,
-    logic jf_exe,
-    logic alushift_sel,
-    logic valid
+    Addr_t pc;
+    Data_t rf_rd1;
+    Data_t rf_rd2;
+    Imm_t imm;
+    RegAddr_t rs1;
+    RegAddr_t rs2;
+    RegAddr_t rd;
+    ALU_SEL_t alu_sel;
+    shift_sel_t shift_sel;
+    logic a_sel;
+    logic b_sel;
+    WB_SEL_t wb_sel;
+    logic reg_wr;
+    Dmem_sel_t dmem_sel;
+    logic jf_exe;
+    logic alushift_sel;
+    logic valid;
 } ISB_decode_t;
 // ===DECODE section (and)
 
@@ -291,14 +296,14 @@ typedef struct packed {
 // ===EXECUTE section
 // interstage buffer (ISB)
 typedef struct packed {
-    Data_t alu_out,
-    Data_t rf_rd2,
-    RegAddr_t rd,
-    WB_SEL_t wb_sel,
-    logic reg_wr,
-    Dmem_sel_t dmem_sel,
-    Addr_t pc4,
-    logic valid
+    Data_t alu_out;
+    Data_t rf_rd2;
+    RegAddr_t rd;
+    WB_SEL_t wb_sel;
+    logic reg_wr;
+    Dmem_sel_t dmem_sel;
+    Addr_t pc4;
+    logic valid;
 } ISB_execute_t;
 // ===EXECUTE section (end)
 
@@ -306,13 +311,13 @@ typedef struct packed {
 // ===MEMORY section
 // interstage buffer (ISB)
 typedef struct packed {
-    Data_t alu_out,
-    Data_t dmem_data_out,
-    RegAddr_t rd,
-    WB_SEL_t wb_sel,
-    logic reg_wr,
-    Addr_t pc4,
-    logic valid
+    Data_t alu_out;
+    Data_t dmem_data_out;
+    RegAddr_t rd;
+    WB_SEL_t wb_sel;
+    logic reg_wr;
+    Addr_t pc4;
+    logic valid;
 } ISB_memory_t;
 // ===MEMORY section (end)
 
@@ -323,6 +328,33 @@ typedef struct packed {
 
 // =================================================
 
+
+
+//=== Hazard detection unit section
+typedef struct packed {
+    logic jf_id_D;
+    logic jf_exe_D;
+    logic rf_rs1_D;
+    logic rf_rs2_D;
+    logic [4:0] opcode_D;
+
+    logic jf_exe_E;
+    logic rf_rd_E;
+    logic rf_we_E;
+
+    logic rf_rd_W;
+    logic rf_we_W;
+} HDU_input_t;
+
+typedef struct packed {
+    logic stall_pc;
+    logic if_id_stall;
+    logic if_id_flush;
+    logic id_ex_stall;
+    logic id_ex_flush;
+} HDU_output_t;
+
+//=== Hazard detection unit section (end)
 
 
 

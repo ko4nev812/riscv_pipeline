@@ -46,4 +46,4 @@ module register_fil_m #(
     end
   end
 
-endmodule : register_file
+endmodule : register_fil_m
