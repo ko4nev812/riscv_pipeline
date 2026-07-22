@@ -67,11 +67,14 @@ assign reg_wr = isb_decode.reg_wr;
 RegAddr_t rd;
 assign rd = isb_decode.rd;
 
+assign isb_execute.dmem_sel = isb_decode.dmem_sel;
+assign isb_execute.dmem_data_in = isb_decode.rf_rd2;
+assign isb_execute.dmem_addr = alu_out;
+
 always_ff @(posedge clk) begin
     isb_execute.alu_out <= isb_decode.alushift_sel? shifter_out : alu_out;
     isb_execute.pc4 <= isb_decode.pc + 4;
     isb_execute.rd  <= isb_decode.rd;
-    isb_execute.dmem_sel <= isb_decode.dmem_sel;
     isb_execute.reg_wr <= isb_decode.reg_wr;
     isb_execute.rf_rd2 <= isb_decode.rf_rd2;
     isb_execute.wb_sel <= isb_decode.wb_sel;

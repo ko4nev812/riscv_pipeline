@@ -22,11 +22,11 @@ logic [1:0] dmem_byte_off;
 Data_t      dmem_rdata_out;
 Data_t      dmem_wdata_in;
 
-assign dmem_addr   = isb_execute.alu_out;
+assign dmem_addr   = isb_execute.dmem_addr;
 assign dmem_we     = isb_execute.dmem_sel[3];
 assign dmem_funct3 = isb_execute.dmem_sel[2:0];
 assign dmem_byte_off = dmem_addr[1:0];
-assign dmem_wdata_in = isb_execute.rf_rd2;
+assign dmem_wdata_in = isb_execute.dmem_data_in;
 
 risc_v_dmem_wr_port_m dmem_wr_port_inst
 (
