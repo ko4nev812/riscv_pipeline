@@ -50,7 +50,7 @@ always_ff @(posedge clk) begin
         isb_fetch.valid   <= !rst;
     end
     if(isb_fetch_flush) begin
-        isb_fetch.inst <= '0;
+        isb_fetch.instr <= '0;
         isb_fetch.valid <= '0;
     end
 

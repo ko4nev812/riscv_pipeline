@@ -88,8 +88,8 @@ assign opcode = id_instr.opcode;
 
 always_ff @(posedge clk) begin
     if(!isb_decode_stall) begin
-        isb_decode.rd1 <= rf_rd1;
-        isb_decode.rd2 <= rf_rd2;
+        isb_decode.rf_rd1 <= rf_rd1;
+        isb_decode.rf_rd2 <= rf_rd2;
         isb_decode.imm <= imm;
         isb_decode.pc <= isb_fetch.pc;
         isb_decode.rd <= instr[11:7];

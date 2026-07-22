@@ -119,19 +119,24 @@ puts $fh {if {$xsc_cmd eq ""} { error "SHA3 DPI: xsc was not found in PATH" }}
 puts $fh "exec {*}\$xsc_cmd --cppversion 11 -o sha3_dpi \"$sha3_dpi_cpp\""
 close $fh
 
+
+set rtl_dirs [list \
+    "$rtlDir" \
+    "$rtlDir/modules" \
+    "$rtlDir/stages" \
+]
+
+set rtl_files {}
+foreach dir $rtl_dirs {
+    set files [glob -nocomplain -directory $dir *.sv *.v]
+    set rtl_files [concat $rtl_files $files]
+}
+
+if {[llength $rtl_files] > 0} {
+    add_files -fileset sources_1 $rtl_files
+}
+
 add_files -fileset sources_1              \
-         $rtlDir/cpu_system.sv            \
-         $rtlDir/cpu_core.sv              \
-         $rtlDir/pc.sv                    \
-         $rtlDir/id.sv                    \
-         $rtlDir/branch_unit_m.sv         \
-         $rtlDir/imem.sv                  \
-         $rtlDir/risc_v_dmem_rd_port_m.sv \
-         $rtlDir/risc_v_dmem_wr_port_m.sv \
-         $rtlDir/imm_gen.sv               \
-         $rtlDir/register_file.sv         \
-         $rtlDir/alu.sv                   \
-         $rtlDir/shifter_alu.sv           \
          $libDir/pf.sv                    \
          $libDir/dual_port_mem.sv         \
          $init_def_file

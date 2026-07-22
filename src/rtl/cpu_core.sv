@@ -63,7 +63,7 @@ HDU_output_t hdu_out;
 
 //--------------------- REGISTER FILE ---------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
-register_file
+register_fil_m
 #(
     .XLEN ( XLEN )
 )

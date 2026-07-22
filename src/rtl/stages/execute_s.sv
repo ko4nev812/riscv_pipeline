@@ -54,7 +54,7 @@ shifter_inst
 (
    .data (isb_decode.rf_rd1),
    .shamt (shift_shamt),
-   .sel(isb_decode.sh_sel),
+   .sel(isb_decode.shift_sel),
    .res (shifter_out)
 );
 
