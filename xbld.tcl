@@ -170,7 +170,7 @@ foreach f [glob -nocomplain $tempDir/*.wcfg] {
 
 file delete -force $tempDir  # file mkdir $tempDir
 
-set_property INCLUDE_DIRS "$rtlDir $simDir $cfgDir" [get_filesets sim_1]
+set_property INCLUDE_DIRS "$rtlDir $simDir $cfgDir" [get_filesets sources_1]
 set_property used_in_synthesis      false [get_files  $simDir/rv_nsu_tb.sv]
 set_property used_in_implementation false [get_files  $simDir/rv_nsu_tb.sv]
 set_property top rv_nsu_tb [get_filesets sim_1]

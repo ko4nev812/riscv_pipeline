@@ -16,7 +16,7 @@ IN_DIR = Path("./uBench")
 OUT_DIR = Path("./uBench/hex")
 
 # Path to RARS (either .jar file or executable)
-RARS_PATH = Path("C:/Users/User/10-RV-NSU/sim/rars1_6.jar")
+RARS_PATH = Path("./rars1_6.jar")
 
 # Path to lst file (list .hex files)
 # if = None, lst file not create

@@ -80,7 +80,7 @@ pll pll_inst
     .locked    ( pll_locked )
 );
 
-assign imem_clk  = clk2;
+assign imem_clk  = cpu_clk;
 assign dmem_clka = clk3;
 
 //--- reset (related to clk)
