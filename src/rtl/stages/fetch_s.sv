@@ -28,11 +28,11 @@ always_comb begin
 
     if (rst)
         next_pc = PC_START_ADDR;
-    if (stall_pc)
+    else if (stall_pc)
         next_pc = pc;
-    if (jf_exe)
+    else if (jf_exe)
         next_pc = alu_out;
-    if (jf_id)
+    else if (jf_id)
         next_pc = imm_pc;
 end
 

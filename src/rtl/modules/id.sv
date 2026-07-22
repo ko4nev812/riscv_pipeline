@@ -22,7 +22,7 @@ module id_m import risc_v_pkg::*;
     parameter int CASE_SIZE = $bits(Id_instr_t) + $bits(Id_controls_in_t);
 
     `define set_default_signals                                                                               \
-        output_controls = { 1'b0, 1'b0, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b1, ALU_ANY, WB_ANY, INSTR_TYPE_ANY }; \
+        output_controls = { 1'b0, DMEMS_ANY, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b0, ALU_ANY, WB_ANY, 1'b0, AS_ANY, INSTR_TYPE_ANY }; \
         illegal = 1'b1;
 
     logic [(CASE_SIZE - 1):0] case_key;
@@ -87,9 +87,9 @@ module id_m import risc_v_pkg::*;
                 /* There goes unsupported instructions, we consider them as NOPs */
                 /* FENCE
                    FENCE.TSO
-                   PAUSE */  'bx_000_00011_x_x: output_controls = { 1'b0, DMEMS_ANY, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b1, ALU_ANY, WB_ANY, 1'b0, AS_ANY, INSTR_TYPE_ANY };
+                   PAUSE */  'bx_000_00011_x_x: output_controls = { 1'b0, DMEMS_ANY, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b0, ALU_ANY, WB_ANY, 1'b0, AS_ANY, INSTR_TYPE_ANY };
                 /* ECALL
-                   EBREAK */ 'b0_000_11100_x_x: output_controls = { 1'b0, DMEMS_ANY, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b1, ALU_ANY, WB_ANY, 1'b0, AS_ANY, INSTR_TYPE_ANY };
+                   EBREAK */ 'b0_000_11100_x_x: output_controls = { 1'b0, DMEMS_ANY, 1'bx, 1'bx, SHIFT_ANY, 1'bx, 1'b0, ALU_ANY, WB_ANY, 1'b0, AS_ANY, INSTR_TYPE_ANY };
     
                 default: begin
                     `set_default_signals;

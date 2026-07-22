@@ -78,6 +78,19 @@ import risc_v_pkg::*;
             hdu_out.id_ex_flush = 1'b1;
         end
 
+        // Decode <-> Memory
+        if (hdu_in.rf_we_M &&
+            (hdu_in.rf_rd_M != 5'd0) &&
+            (
+                (uses_rs1 && (hdu_in.rf_rd_M == hdu_in.rf_rs1_D)) ||
+                (uses_rs2 && (hdu_in.rf_rd_M == hdu_in.rf_rs2_D))
+            ))
+        begin
+            hdu_out.stall_pc    = 1'b1;
+            hdu_out.if_id_stall = 1'b1;
+            hdu_out.id_ex_flush = 1'b1;
+        end
+
         // Decode <-> Writeback
         if (hdu_in.rf_we_W &&
             (hdu_in.rf_rd_W != 5'd0) &&

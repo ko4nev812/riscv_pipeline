@@ -238,9 +238,15 @@ class TraceLogger;
                         dmem_sha3 = digest_dmem();
                         `endif
 
-                        $fwrite(fd_res,"%t %6d %8x %8x \"%s\"", $realtime, instr_cnt, cpu_vif.iaddr, cpu_vif.instr, risc_v_pkg::disasm(cpu_vif.instr));
+                        $fwrite(fd_res,"%t,%0d,%0x,%0x,\"%s\"", 
+                                $realtime, 
+                                instr_cnt, 
+                                cpu_vif.iaddr, 
+                                cpu_vif.instr, 
+                                risc_v_pkg::disasm(cpu_vif.instr));
+
                         for(i = 0; i < NREGS; i++) begin
-                            $fwrite(fd_res,", %8x", get_reg(i));
+                            $fwrite(fd_res,",%0d", $signed(get_reg(i)));
                         end
 
                         `ifdef TRACE_SHA3_DPI_ENA

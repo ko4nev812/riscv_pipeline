@@ -57,12 +57,14 @@ RegAddr_t rd;
 assign rd = isb_execute.rd;
 
 always_ff @(posedge clk) begin
-    isb_memory.dmem_data_out <= dmem_data_out;
+    isb_memory.dmem_data_out <= dmem_rdata_out;
     isb_memory.alu_out <= isb_execute.alu_out;
     isb_memory.pc4 <= isb_execute.pc4;
     isb_memory.rd <= rd;
     isb_memory.reg_wr <= reg_wr;
-    isb_memory.wb_sel <= isb_memory.wb_sel;
+    isb_memory.wb_sel <= isb_execute.wb_sel;
+
+    isb_memory.valid <= isb_execute.valid;
 
     if(rst) isb_memory <= '0;
 end

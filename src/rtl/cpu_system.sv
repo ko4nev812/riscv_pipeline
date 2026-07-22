@@ -181,7 +181,7 @@ dmem_inst
         data_to_cpu = uart_ena ? uart_rdata : dmem_rdata;
     end
 
-    uart_mmio_wrapper uart_inst (
+    uart_mmio_wrapper_m uart_inst (
         .clk(dmem_clka),
         .rst(cpu_rst),
     

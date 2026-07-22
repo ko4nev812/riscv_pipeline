@@ -157,6 +157,23 @@ writeback_stage writeback_s_inst(
 
 
 // ============== HDU ==================
+always_comb begin
+    hdu_in.jf_id_D = decode_s_inst.jf_id;
+    hdu_in.jf_exe_D = decode_s_inst.jf_exe;
+    hdu_in.rf_rs1_D = decode_s_inst.rf_rs1;
+    hdu_in.rf_rs2_D = decode_s_inst.rf_rs2;
+    hdu_in.opcode_D = decode_s_inst.opcode;
+    hdu_in.jf_exe_E = execute_s_inst.jf_exe;
+    hdu_in.rf_rd_E = execute_s_inst.rd;
+    hdu_in.rf_we_E = execute_s_inst.reg_wr;
+    hdu_in.rf_rd_M = memory_s_inst.rd;
+    hdu_in.rf_we_M = memory_s_inst.reg_wr;
+    hdu_in.rf_rd_W = writeback_s_inst.rf_rd;
+    hdu_in.rf_we_W = writeback_s_inst.rf_we3;
+
+end
+
+
 hazard_detection_unit hdu_inst (
     .hdu_in( hdu_in ),
     .hdu_out( hdu_out )

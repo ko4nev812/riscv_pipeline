@@ -63,8 +63,9 @@ imm_gen_m imm_gen_inst
     .imm_type (id_output_controls.imm_type),
     .imm (imm)
 );
-assign isb_decode.imm = imm;
-assign jf_id = imm + isb_fetch.pc;
+
+assign imm_pc = imm + isb_fetch.pc;
+assign jf_id = id_output_controls.jf_id && isb_fetch.valid;
 
 
 
@@ -82,7 +83,7 @@ branch_unit_m branch_unit_inst
 
 logic jf_exe;
 assign jf_exe = id_output_controls.jf_exe;
-logic opcode;
+logic [4:0] opcode;
 assign opcode = id_instr.opcode;
 
 

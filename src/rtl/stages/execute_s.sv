@@ -1,4 +1,4 @@
-`include "/risc-v.svh"
+`include "risc-v.svh"
 
 module execute_stage import risc_v_pkg::*;(
     output ISB_execute_t isb_execute,

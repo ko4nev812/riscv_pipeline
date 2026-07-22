@@ -334,15 +334,18 @@ typedef struct packed {
 typedef struct packed {
     logic jf_id_D;
     logic jf_exe_D;
-    logic rf_rs1_D;
-    logic rf_rs2_D;
+    RegAddr_t rf_rs1_D;
+    RegAddr_t rf_rs2_D;
     logic [4:0] opcode_D;
 
     logic jf_exe_E;
-    logic rf_rd_E;
+    RegAddr_t rf_rd_E;
     logic rf_we_E;
 
-    logic rf_rd_W;
+    RegAddr_t rf_rd_M;
+    logic rf_we_M;
+
+    RegAddr_t rf_rd_W;
     logic rf_we_W;
 } HDU_input_t;
 
