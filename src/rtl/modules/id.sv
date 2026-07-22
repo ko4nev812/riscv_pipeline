@@ -36,10 +36,10 @@ module id_m import risc_v_pkg::*;
         end else begin
             casex (case_key)
                 // MNEMONIC  funct7_funct3_opcode_breq_brlt         reg_wr  dmem_sel    a_sel  b_sel  sh_sel      br_un  jf_id   alu_sel    wb_sel        jf_exe  alushift_sel  imm_type
-                /* LUI   */  'bx_xxx_01101_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'bx,  1'b0,  SHIFT_ANY,  1'bx,  1'b0,   ALU_LUI,   WB_ALU_OUT,   1'b0,   AS_ANY,       INSTR_TYPE_U };
-                /* AUIPC */  'bx_xxx_00101_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'b0,  1'b0,  SHIFT_ANY,  1'bx,  1'b0,   ALU_ADD,   WB_ALU_OUT,   1'b0,   AS_ANY,       INSTR_TYPE_U };
+                /* LUI   */  'bx_xxx_01101_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'bx,  1'b0,  SHIFT_ANY,  1'bx,  1'b0,   ALU_LUI,   WB_ALU_OUT,   1'b0,   AS_ALU_OUT,   INSTR_TYPE_U };
+                /* AUIPC */  'bx_xxx_00101_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'b0,  1'b0,  SHIFT_ANY,  1'bx,  1'b0,   ALU_ADD,   WB_ALU_OUT,   1'b0,   AS_ALU_OUT,   INSTR_TYPE_U };
                 /* JAL   */  'bx_xxx_11011_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'b0,  1'b0,  SHIFT_ANY,  1'bx,  1'b1,   ALU_ADD,   WB_PC4_OUT,   1'b0,   AS_ANY,       INSTR_TYPE_J };
-                /* JALR  */  'b0_000_11001_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'b1,  1'b0,  SHIFT_ANY,  1'bx,  1'b1,   ALU_JALR,  WB_PC4_OUT,   1'b1,   AS_ANY,       INSTR_TYPE_I };
+                /* JALR  */  'b0_000_11001_x_x: output_controls = { 1'b1,   DMEMS_ANY,  1'b1,  1'b0,  SHIFT_ANY,  1'bx,  1'b0,   ALU_JALR,  WB_PC4_OUT,   1'b1,   AS_ANY,       INSTR_TYPE_I };
     
                 // NOTE: in case when required `br_eq` or `br_lt` for branch command is wrong:
                 //       we set flag `br_un` according to instruction, but also set `pc_sel=1` to move to the next instruction `PC+4` instead of branch

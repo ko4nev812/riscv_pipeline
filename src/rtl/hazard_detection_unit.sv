@@ -9,6 +9,7 @@ import risc_v_pkg::*;
 
     logic uses_rs1;
     logic uses_rs2;
+    logic data_stall;
 
     always_comb begin
         //==============================================================
@@ -41,11 +42,25 @@ import risc_v_pkg::*;
         endcase
 
         //==============================================================
+        // Data-hazard predicate
+        //==============================================================
+        data_stall =
+            (hdu_in.rf_we_E && (hdu_in.rf_rd_E != 5'd0) &&
+             ((uses_rs1 && (hdu_in.rf_rd_E == hdu_in.rf_rs1_D)) ||
+              (uses_rs2 && (hdu_in.rf_rd_E == hdu_in.rf_rs2_D)))) ||
+            (hdu_in.rf_we_M && (hdu_in.rf_rd_M != 5'd0) &&
+             ((uses_rs1 && (hdu_in.rf_rd_M == hdu_in.rf_rs1_D)) ||
+              (uses_rs2 && (hdu_in.rf_rd_M == hdu_in.rf_rs2_D)))) ||
+            (hdu_in.rf_we_W && (hdu_in.rf_rd_W != 5'd0) &&
+             ((uses_rs1 && (hdu_in.rf_rd_W == hdu_in.rf_rs1_D)) ||
+              (uses_rs2 && (hdu_in.rf_rd_W == hdu_in.rf_rs2_D))));
+
+        //==============================================================
         // Control hazards
         //==============================================================
 
         // JALR in Decode
-        if (hdu_in.jf_exe_D) begin
+        if (hdu_in.jf_exe_D && !data_stall) begin
             hdu_out.stall_pc    = 1'b1;
             hdu_out.if_id_flush = 1'b1;
         end
@@ -57,14 +72,19 @@ import risc_v_pkg::*;
         end
 
         // Branch / JAL in Decode
-        if (hdu_in.jf_id_D) begin
+        if (hdu_in.jf_id_D && !data_stall) begin
             hdu_out.if_id_flush = 1'b1;
         end
-
+        
         //==============================================================
         // Data hazards
         //==============================================================
-
+        if(data_stall) begin
+            hdu_out.stall_pc    = 1'b1;
+            hdu_out.if_id_stall = 1'b1;
+            hdu_out.id_ex_flush = 1'b1;
+        end
+        /*
         // Decode <-> Execute
         if (hdu_in.rf_we_E &&
             (hdu_in.rf_rd_E != 5'd0) &&
@@ -103,6 +123,7 @@ import risc_v_pkg::*;
             hdu_out.if_id_stall = 1'b1;
             hdu_out.id_ex_flush = 1'b1;
         end
+        */
 
     end
 
