@@ -2,6 +2,7 @@
 
 module memory_stage import risc_v_pkg::*;(
     output ISB_memory_t isb_memory,
+    input Dmem_memory_stage_input_t dmem_input,
 
     input ISB_execute_t isb_execute,
 
@@ -22,11 +23,11 @@ logic [1:0] dmem_byte_off;
 Data_t      dmem_rdata_out;
 Data_t      dmem_wdata_in;
 
-assign dmem_addr   = isb_execute.dmem_addr;
-assign dmem_we     = isb_execute.dmem_sel[3];
-assign dmem_funct3 = isb_execute.dmem_sel[2:0];
+assign dmem_addr   = dmem_input.dmem_addr;
+assign dmem_we     = dmem_input.dmem_sel[3];
+assign dmem_funct3 = dmem_input.dmem_sel[2:0];
 assign dmem_byte_off = dmem_addr[1:0];
-assign dmem_wdata_in = isb_execute.dmem_data_in;
+assign dmem_wdata_in = dmem_input.dmem_data_in;
 
 risc_v_dmem_wr_port_m dmem_wr_port_inst
 (
@@ -40,11 +41,22 @@ risc_v_dmem_wr_port_m dmem_wr_port_inst
     .data_out (dmem_data_in)
 );
 
+
+//clk (memory job)
+
+logic [2:0] dmem_rd_funct3;
+logic [1:0] dmem_rd_byte_off;
+
+always_ff @(posedge clk) begin
+    dmem_rd_funct3 <= dmem_funct3;
+    dmem_rd_byte_off <= dmem_byte_off;
+end
+
 risc_v_dmem_rd_port_m dmem_rd_port_inst
 (
     // -- in
-    .funct3 (dmem_funct3),
-    .byte_addr (dmem_byte_off),
+    .funct3 (dmem_rd_funct3),
+    .byte_addr (dmem_rd_byte_off),
     .data_in(dmem_data_out),
     // -- out
     .data_out(dmem_rdata_out)

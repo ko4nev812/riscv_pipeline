@@ -301,9 +301,6 @@ typedef struct packed {
     RegAddr_t rd;
     WB_SEL_t wb_sel;
     logic reg_wr;
-    Dmem_sel_t dmem_sel;
-    Data_t dmem_addr;
-    Data_t dmem_data_in;
     Addr_t pc4;
     logic valid;
 } ISB_execute_t;
@@ -321,6 +318,13 @@ typedef struct packed {
     Addr_t pc4;
     logic valid;
 } ISB_memory_t;
+
+// Dmem input
+typedef struct packed {
+    Dmem_sel_t dmem_sel;
+    Data_t dmem_addr;
+    Data_t dmem_data_in;
+} Dmem_memory_stage_input_t;
 // ===MEMORY section (end)
 
 

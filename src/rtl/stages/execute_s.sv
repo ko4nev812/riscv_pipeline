@@ -2,6 +2,7 @@
 
 module execute_stage import risc_v_pkg::*;(
     output ISB_execute_t isb_execute,
+    output Dmem_memory_stage_input_t dmem_input,
 
     input ISB_decode_t isb_decode,
 
@@ -67,9 +68,9 @@ assign reg_wr = isb_decode.reg_wr;
 RegAddr_t rd;
 assign rd = isb_decode.rd;
 
-assign isb_execute.dmem_sel = isb_decode.dmem_sel;
-assign isb_execute.dmem_data_in = isb_decode.rf_rd2;
-assign isb_execute.dmem_addr = alu_out;
+assign dmem_input.dmem_sel = isb_decode.dmem_sel;
+assign dmem_input.dmem_data_in = isb_decode.rf_rd2;
+assign dmem_input.dmem_addr = alu_out;
 
 always_ff @(posedge clk) begin
     isb_execute.alu_out <= isb_decode.alushift_sel? shifter_out : alu_out;

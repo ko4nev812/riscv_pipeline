@@ -61,6 +61,8 @@ RegAddr_t rf_rd;
 HDU_input_t  hdu_in;
 HDU_output_t hdu_out;
 
+Dmem_memory_stage_input_t dmem_input;
+
 //--------------------- REGISTER FILE ---------------------------
 (* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 register_fil_m
@@ -125,6 +127,8 @@ decode_stage decode_s_inst(
 execute_stage execute_s_inst(
     .isb_execute( isb_execute ),
     .isb_decode( isb_decode ),
+
+    .dmem_input(dmem_input),
     
     .jf_exe( jf_exe_E ),
     .alures( alu_out_E ),
@@ -136,6 +140,7 @@ execute_stage execute_s_inst(
 memory_stage memory_s_inst(
     .isb_memory( isb_memory ),
     .isb_execute( isb_execute ),
+    .dmem_input(dmem_input),
 
     .dmem_addr( dmem_addr ),
     .dmem_byte_we( dmem_byte_we ),
