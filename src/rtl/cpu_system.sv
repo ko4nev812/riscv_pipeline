@@ -196,17 +196,21 @@ dmem_inst
 `endif
 
 //--------------------- simplest port -------------------------------------
-localparam logic [DMEM_PORT_ADDR_WIDTH:0] LED_PORT_ADDR = {1'b1, {DMEM_PORT_ADDR_WIDTH{1'b0}}, 2'b00}; // { 1 - high bit, DMEM_PORT_ADDR_WIDTH-width zeros, 2-low-zeros }
+localparam logic [DMEM_PORT_ADDR_WIDTH:0] LED_PORT_ADDR = {1'b1, {DMEM_PORT_ADDR_WIDTH{1'b0}}, 2'b00};
+
+logic [`LED_NUM-1:0] led_next;
 
 always_ff @(posedge cpu_clk) begin
     if(cpu_rst) begin
-        led <= '0;
+        led_next <= '0;
+        led      <= '0;
     end else begin
         if(dmem_byte_we == 4'b1111) begin
             if(dmem_addr[0 +: (DMEM_PORT_ADDR_WIDTH + 1)] == LED_PORT_ADDR) begin
-                led <= dmem_wdata[`LED_NUM-1:0];
+                led_next <= dmem_wdata[`LED_NUM-1:0];
             end
         end
+        led <= led_next;
     end
 end
 
