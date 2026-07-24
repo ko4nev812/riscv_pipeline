@@ -43,9 +43,9 @@ ISB_memory_t isb_memory;
 
 // fetch
 logic jf_exe_E;
-logic jf_id_D;
+//logic jf_id_D;
 Data_t alu_out_E;
-Data_t imm_pc_D;
+//Data_t imm_pc_D;
 
 // reg file
 RegAddr_t rf_rs1;
@@ -92,9 +92,7 @@ fetch_stage fetch_s_inst(
     .isb_fetch_flush( hdu_out.if_id_flush ),
 
     .jf_exe( jf_exe_E ),
-    .jf_id( jf_id_D ),
     .alu_out( alu_out_E ),
-    .imm_pc( imm_pc_D ),
 
     .clk( clk ),
     .rst( rst ),
@@ -115,9 +113,6 @@ decode_stage decode_s_inst(
     .rf_rs2( rf_rs2 ),
     .rf_rd1( rf_rd1 ),
     .rf_rd2( rf_rd2 ),
-
-    .imm_pc( imm_pc_D ),
-    .jf_id( jf_id_D),
 
     .clk( clk ),
     .rst( rst )
@@ -163,7 +158,6 @@ writeback_stage writeback_s_inst(
 
 // ============== HDU ==================
 always_comb begin
-    hdu_in.jf_id_D = decode_s_inst.jf_id;
     hdu_in.jf_exe_D = decode_s_inst.jf_exe;
     hdu_in.rf_rs1_D = decode_s_inst.rf_rs1;
     hdu_in.rf_rs2_D = decode_s_inst.rf_rs2;

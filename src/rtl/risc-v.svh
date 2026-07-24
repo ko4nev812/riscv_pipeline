@@ -203,6 +203,17 @@ typedef enum logic {
     AS_ANY = 1'bx
 } ALUSHIFT_sel_t;
 
+typedef enum logic [2:0] {
+    BRANCH_BEQ = 3'b001,
+    BRANCH_BNE = 3'b010,
+    BRANCH_BLT = 3'b011,
+    BRANCH_BGE = 3'b100,
+    BRANCH_BLTU = 3'b101,
+    BRANCH_BGEU = 3'b110,
+
+    BRANCH_ANY = 3'b000
+} Branch_sel_t;
+
 
 /*
  * Instruction decoder control OUTPUT signals.
@@ -227,8 +238,7 @@ typedef struct packed {
     logic           a_sel;
     logic           b_sel;
     shift_sel_t     sh_sel;
-    logic           br_un;
-    logic           jf_id;
+    Branch_sel_t    branch_sel;
     ALU_SEL_t       alu_sel;
     WB_SEL_t        wb_sel;
     logic           jf_exe;
@@ -281,6 +291,7 @@ typedef struct packed {
     RegAddr_t rd;
     ALU_SEL_t alu_sel;
     shift_sel_t shift_sel;
+    Branch_sel_t branch_sel;
     logic a_sel;
     logic b_sel;
     WB_SEL_t wb_sel;
@@ -338,7 +349,6 @@ typedef struct packed {
 
 //=== Hazard detection unit section
 typedef struct packed {
-    logic jf_id_D;
     logic jf_exe_D;
     RegAddr_t rf_rs1_D;
     RegAddr_t rf_rs2_D;

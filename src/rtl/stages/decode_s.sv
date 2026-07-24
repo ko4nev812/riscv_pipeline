@@ -15,10 +15,6 @@ module decode_stage import risc_v_pkg::*;
     input Data_t rf_rd1,
     input Data_t rf_rd2,
 
-    // branch and jal instruction
-    output Addr_t imm_pc,
-    output logic jf_id,
-
     input logic clk,
     input logic rst
 );
@@ -29,7 +25,6 @@ Imm_input_t Ig_Imm_input;
 Data_t imm;
 
 Id_instr_t id_instr;
-Id_controls_in_t id_controls_in;
 Id_controls_out_t id_output_controls;
 logic id_illegal;
 
@@ -50,7 +45,6 @@ assign id_instr.ones   = instr[1:0];
 id_m id_inst
 (
     .instr ( id_instr ),
-    .input_controls ( id_controls_in ),
     .output_controls (id_output_controls),
     .illegal (id_illegal)
 );
@@ -64,21 +58,9 @@ imm_gen_m imm_gen_inst
     .imm (imm)
 );
 
-assign imm_pc = imm + isb_fetch.pc;
-assign jf_id = id_output_controls.jf_id && isb_fetch.valid;
 
 
 
-
-// ====== Branch unit ======
-branch_unit_m branch_unit_inst
-(
-    .rd1(rf_rd1),
-    .rd2(rf_rd2),
-    .br_un(id_output_controls.br_un),
-    .br_eq(id_controls_in.br_eq),
-    .br_lt(id_controls_in.br_lt)
-);
 
 
 logic jf_exe;
@@ -100,6 +82,7 @@ always_ff @(posedge clk) begin
         isb_decode.a_sel <= id_output_controls.a_sel;
         isb_decode.b_sel <= id_output_controls.b_sel;
         isb_decode.jf_exe <= id_output_controls.jf_exe;
+        isb_decode.branch_sel <= id_output_controls.branch_sel;
         isb_decode.alu_sel <= id_output_controls.alu_sel;
         isb_decode.shift_sel <= id_output_controls.sh_sel;
         isb_decode.alushift_sel <= id_output_controls.alushift_sel;

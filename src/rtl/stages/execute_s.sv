@@ -47,6 +47,7 @@ alu_inst
 
 
 // ====== Shifter ======
+(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
 risc_v_shifter_m
 #(
     .XLEN ( XLEN )
@@ -59,8 +60,22 @@ shifter_inst
    .res (shifter_out)
 );
 
-assign jf_exe = isb_decode.jf_exe;
+
 assign alures = alu_out;
+
+logic branch_taken;
+//Branch unit
+(* keep_hierarchy = `PRJ_KEEP_HIEARARCHY *)
+branch_unit_m branch_unit_m_inst (
+    .rd1         (isb_decode.rf_rd1),
+    .rd2         (isb_decode.rf_rd2),
+    .branch_sel  (isb_decode.branch_sel),
+    .branch_taken(branch_taken)
+);
+
+assign jf_exe = isb_decode.jf_exe || branch_taken;
+
+
 
 logic reg_wr;
 assign reg_wr = isb_decode.reg_wr;

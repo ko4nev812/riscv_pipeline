@@ -72,9 +72,9 @@ import risc_v_pkg::*;
         end
 
         // Branch / JAL in Decode
-        if (hdu_in.jf_id_D && !data_stall) begin
-            hdu_out.if_id_flush = 1'b1;
-        end
+        //if (hdu_in.jf_id_D && !data_stall) begin
+        //    hdu_out.if_id_flush = 1'b1;
+        //end
         
         //==============================================================
         // Data hazards
