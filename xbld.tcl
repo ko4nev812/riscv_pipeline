@@ -153,6 +153,8 @@ if $enable_uart {
     add_files -fileset constrs_1 $constDir/uart_basys_3.xdc
 }
 
+set_property -name {xsim.simulate.xsim.more_options} -value "-view [file join $libDir rv_nsu_tb_behav.wcfg]" -objects [get_filesets sim_1]
+
 #add_files -fileset constrs_1 [file join $constDir "rv_nsu_basys_3.tcl"]
 #set_property FILE_TYPE {TCL} [get_files [file join $constDir "rv_nsu_basys_3.tcl"]]
 
@@ -193,7 +195,7 @@ set_msg_config -suppress -id {Common 17-576}
 if $build_pll_ip {
     puts "\n------------------- create PLL IP"
     set ip_pll_name   "pll"
-    set ip_pll_clk    50.0
+    set ip_pll_clk    125.0
     set ip_pll_phase2 45.0
     set ip_pll_phase3 200.0
 
